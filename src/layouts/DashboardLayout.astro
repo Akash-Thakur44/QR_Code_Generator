@@ -1,0 +1,166 @@
+---
+import "../assets/styles/global.css";
+import { getSessionUser } from "../lib/auth";
+import { getDB } from "../lib/db";
+
+interface Props {
+  title?: string;
+  activeTab?: "qr" | "create" | "settings";
+}
+
+const { title = "Dashboard - Real QR Code Generator", activeTab = "qr" } = Astro.props;
+
+// Enforce authentication
+const user = await getSessionUser(Astro);
+if (!user) {
+  return Astro.redirect("/login?redirect=" + encodeURIComponent(Astro.url.pathname));
+}
+
+// Fetch user's workspace
+let orgName = "My Workspace";
+try {
+  const db = getDB(Astro);
+  const org = await db
+    .prepare("SELECT name FROM organizations WHERE owner_id = ?")
+    .bind(user.id)
+    .first<{ name: string }>();
+  if (org) {
+    orgName = org.name;
+  }
+} catch (err) {
+  console.error("Dashboard layout db fetch error:", err);
+}
+---
+
+<!doctype html>
+<html lang="en" class="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" href="/favicon.ico" />
+    <meta name="generator" content={Astro.generator} />
+    <title>{title}</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+    <script is:inline>
+      const savedTheme = localStorage.getItem("theme");
+      const systemTheme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+      const activeTheme = savedTheme || systemTheme;
+      document.documentElement.className = activeTheme;
+    </script>
+  </head>
+  <body class="bg-canvas-soft text-ink min-h-screen flex flex-col md:flex-row selection:bg-primary selection:text-on-primary font-sans">
+    
+    <!-- Sidebar -->
+    <aside class="w-full md:w-64 border-b md:border-b-0 md:border-r border-hairline bg-canvas shrink-0 flex flex-col justify-between">
+      <div>
+        <!-- Brand / Header -->
+        <div class="h-16 px-6 border-b border-hairline flex items-center justify-between">
+          <a href="/dashboard" class="flex items-center gap-2">
+            <svg class="h-5 w-5 text-ink" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="3" width="7" height="7"></rect>
+              <rect x="14" y="3" width="7" height="7"></rect>
+              <rect x="3" y="14" width="7" height="7"></rect>
+              <path d="M14 14h2v2h-2z"></path>
+              <path d="M20 20h2v2h-2z"></path>
+              <path d="M18 18h2v2h-2z"></path>
+              <path d="M14 20h2v2h-2z"></path>
+              <path d="M20 14h2v2h-2z"></path>
+            </svg>
+            <span class="font-sans text-base font-semibold text-ink">
+              Real<span class="font-mono font-medium text-mute">QR</span>
+            </span>
+          </a>
+          
+          <!-- Quick workspace badge -->
+          <span class="text-[9px] font-mono bg-canvas-soft border border-hairline px-2 py-0.5 rounded-full text-mute max-w-[100px] truncate">
+            {orgName}
+          </span>
+        </div>
+
+        <!-- Links -->
+        <nav class="p-4 space-y-1">
+          <a
+            href="/dashboard"
+            class={`flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-sm transition-colors ${
+              activeTab === "qr" ? "bg-canvas-soft-2 text-ink" : "text-body hover:text-ink hover:bg-canvas-soft"
+            }`}
+          >
+            <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="9" y1="3" x2="9" y2="21"></line></svg>
+            QR Codes
+          </a>
+          <a
+            href="/dashboard/create"
+            class={`flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-sm transition-colors ${
+              activeTab === "create" ? "bg-canvas-soft-2 text-ink" : "text-body hover:text-ink hover:bg-canvas-soft"
+            }`}
+          >
+            <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+            Create QR
+          </a>
+          <a
+            href="/dashboard/settings"
+            class={`flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-sm transition-colors ${
+              activeTab === "settings" ? "bg-canvas-soft-2 text-ink" : "text-body hover:text-ink hover:bg-canvas-soft"
+            }`}
+          >
+            <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+            Settings
+          </a>
+        </nav>
+      </div>
+
+      <!-- Bottom Profile block -->
+      <div class="p-4 border-t border-hairline bg-canvas-soft/40 flex items-center justify-between gap-3">
+        <div class="min-w-0">
+          <div class="text-xs font-semibold text-ink truncate">{user.email}</div>
+          <div class="text-[10px] text-mute capitalize">{user.subscription_tier} Account</div>
+        </div>
+        
+        <a href="/api/auth/logout" class="p-2 text-body hover:text-error transition-colors" title="Log Out">
+          <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+        </a>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="flex-grow min-w-0 p-6 md:p-10">
+      <!-- Title Bar -->
+      <div class="flex items-center justify-between border-b border-hairline pb-6 mb-8">
+        <h1 class="text-2xl font-semibold text-ink tracking-tight select-none">
+          {title}
+        </h1>
+        <div class="flex items-center gap-3">
+          <button id="theme-toggle-dashboard" class="p-2 border border-hairline rounded-sm bg-canvas text-body hover:text-ink cursor-pointer hover:bg-canvas-soft-2 transition-colors">
+            <svg class="h-4 w-4 block dark:hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path></svg>
+            <svg class="h-4 w-4 hidden dark:block" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2"></path><path d="M12 20v2"></path><path d="M4.93 4.93l1.41 1.41"></path><path d="M17.66 17.66l1.41 1.41"></path><path d="M2 12h2"></path><path d="M20 12h2"></path><path d="M6.34 17.66l-1.41 1.41"></path><path d="M19.07 4.93l-1.41 1.41"></path></svg>
+          </button>
+          <slot name="header-actions" />
+        </div>
+      </div>
+      
+      <!-- Body Slot -->
+      <slot />
+    </main>
+
+    <script>
+      // Dashboard Theme toggler
+      document.getElementById("theme-toggle-dashboard")?.addEventListener("click", () => {
+        const doc = document.documentElement;
+        if (doc.classList.contains("dark")) {
+          doc.classList.remove("dark");
+          doc.classList.add("light");
+          localStorage.setItem("theme", "light");
+        } else {
+          doc.classList.remove("light");
+          doc.classList.add("dark");
+          localStorage.setItem("theme", "dark");
+        }
+      });
+    </script>
+  </body>
+</html>

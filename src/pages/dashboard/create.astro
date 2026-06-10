@@ -1,0 +1,17 @@
+---
+import DashboardLayout from "../../layouts/DashboardLayout.astro";
+import { QRGeneratorShell } from "../../components/qr/QRGeneratorShell";
+import { getSessionUser } from "../../lib/auth";
+
+const user = await getSessionUser(Astro);
+if (!user) {
+  return Astro.redirect("/login");
+}
+---
+
+<DashboardLayout title="Create QR Code" activeTab="create">
+  <!-- Interactive customizer widget in dashboard -->
+  <div class="py-2">
+    <QRGeneratorShell client:load isLoggedIn={true} />
+  </div>
+</DashboardLayout>

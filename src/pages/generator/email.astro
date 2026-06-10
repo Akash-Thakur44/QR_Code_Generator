@@ -1,0 +1,51 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import { QRGeneratorShell } from "../../components/qr/QRGeneratorShell";
+import Card from "../../components/ui/Card";
+---
+
+<Layout title="Free Email QR Code Generator - Real QR Code Generator" description="Generate custom QR codes that automatically open mail apps with recipient, subject, and body pre-filled. Free vector downloads.">
+  <div class="py-12 text-center max-w-3xl mx-auto">
+    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-link-bg-soft text-link text-xs font-mono font-medium mb-4">
+      EMAIL GENERATOR
+    </div>
+    <h1 class="text-4xl md:text-5xl font-semibold tracking-tight text-ink mb-6">
+      Free Email QR Code Generator.
+    </h1>
+    <p class="text-base text-body">
+      Compose and send emails instantly upon scanning. Create custom QR codes that pre-fill target address, subject lines, and body copies in the user's mail client.
+    </p>
+  </div>
+
+  <!-- Interactive Customizer preloaded with Email -->
+  <div class="py-6 mb-20">
+    <QRGeneratorShell client:load defaultType="email" />
+  </div>
+
+  <!-- SEO structured copy block -->
+  <div class="max-w-4xl mx-auto px-4 space-y-12 pb-16">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+      <div>
+        <h2 class="text-xl font-semibold text-ink mb-4">How does an Email QR Code work?</h2>
+        <p class="text-sm text-body leading-relaxed">
+          Email QR codes utilize standard mail headers structured as a <code>mailto:recipient?subject=Title&body=Message</code> URI. When scanned, the smartphone interprets the syntax and opens the default email application (such as Apple Mail, Gmail, or Outlook) with all fields pre-completed.
+        </p>
+      </div>
+      <div>
+        <h2 class="text-xl font-semibold text-ink mb-4">What are the benefits of email QRs?</h2>
+        <p class="text-sm text-body leading-relaxed">
+          Perfect for newsletter subscriptions, feedback forms, customer support inquiries, or RSVP registrations. It removes friction by pre-typing standard responses so clients just tap "Send."
+        </p>
+      </div>
+    </div>
+
+    <Card level={2} rounded="lg" className="bg-canvas p-8">
+      <h3 class="text-lg font-semibold text-ink mb-3">Email Customization Best Practices</h3>
+      <ul class="text-sm text-body space-y-3 list-disc list-inside leading-relaxed">
+        <li><strong>Ensure Address Accuracy:</strong> Triple-check the spelling of the recipient's email address to guarantee messages route successfully.</li>
+        <li><strong>Payload Size considerations:</strong> Complex body texts increase the barcode size. Keep text simple to maintain fast scan capability.</li>
+        <li><strong>Branding:</strong> Pick our red mail envelope template icon from the Logo panel to make the QR target clear.</li>
+      </ul>
+    </Card>
+  </div>
+</Layout>

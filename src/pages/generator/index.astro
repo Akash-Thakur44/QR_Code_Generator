@@ -1,0 +1,45 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import Card from "../../components/ui/Card";
+
+const generators = [
+  { href: "/generator/url", name: "URL QR Code Generator", desc: "Create high-resolution scan codes redirecting to any link or website.", icon: "🔗" },
+  { href: "/generator/wifi", name: "WiFi QR Code Generator", desc: "Connect users to your local wireless networks without sharing passwords.", icon: "📶" },
+  { href: "/generator/vcard", name: "vCard QR Code Generator", desc: "Share your business contact card (vCard/VCF) directly onto mobile address books.", icon: "👤" },
+  { href: "/generator/whatsapp", name: "WhatsApp QR Code Generator", desc: "Direct users to a pre-filled WhatsApp direct chat with one simple scan.", icon: "💬" },
+  { href: "/generator/email", name: "Email QR Code Generator", desc: "Set up pre-filled emails with target address, subject lines, and body copies.", icon: "✉️" },
+  { href: "/generator/sms", name: "SMS QR Code Generator", desc: "Send pre-composed text messages to mobile phone lines on scan.", icon: "📱" },
+  { href: "/generator/location", name: "Location QR Code Generator", desc: "Provide geographical latitude and longitude coordinates for map routing.", icon: "📍" }
+];
+---
+
+<Layout title="Free QR Code Generators Directory - Real QR Code Generator" description="Browse all specialized QR code generators: URL, WiFi, WhatsApp, vCard, SMS, Email, and Location. Create customizable high-res codes.">
+  <div class="py-12 text-center max-w-3xl mx-auto">
+    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-link-bg-soft text-link text-xs font-mono font-medium mb-4">
+      DIRECTORY
+    </div>
+    <h1 class="text-4xl md:text-5xl font-semibold tracking-tight text-ink mb-6">
+      Dedicated QR generators.
+    </h1>
+    <p class="text-base text-body">
+      Select a specialized tool to pre-fill specific QR data types according to standard formatting specifications. Fully customizable and optimized for mobile cameras.
+    </p>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto px-4 mt-8">
+    {generators.map((gen) => (
+      <a href={gen.href} class="block h-full group">
+        <Card level={2} rounded="lg" className="h-full hover:border-neutral-400 hover:shadow-level-3 transition-all cursor-pointer flex flex-col justify-between">
+          <div>
+            <div class="text-3xl mb-4 select-none">{gen.icon}</div>
+            <h3 class="text-base font-semibold text-ink mb-2 group-hover:text-link transition-colors">
+              {gen.name}
+            </h3>
+            <p class="text-xs text-body leading-relaxed">{gen.desc}</p>
+          </div>
+          <span class="text-[11px] font-mono font-semibold text-link mt-4 inline-block">Open Generator →</span>
+        </Card>
+      </a>
+    ))}
+  </div>
+</Layout>
