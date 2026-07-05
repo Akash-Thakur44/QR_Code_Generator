@@ -1,0 +1,116 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Card from "../components/ui/Card";
+import Button from "../components/ui/Button";
+
+// If user is already logged in, redirect them directly to the dashboard
+import { getSessionUser } from "../lib/auth";
+const user = await getSessionUser(Astro);
+if (user) {
+  return Astro.redirect("/dashboard");
+}
+---
+
+<Layout title="Log In - Real QR Code Generator" description="Log into your account to manage, edit, and track your dynamic QR codes.">
+  <div class="flex items-center justify-center min-h-[60vh] py-12 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-md w-full">
+      <Card level={4} rounded="lg" className="p-8 bg-canvas">
+        <div class="text-center mb-8">
+          <h1 class="text-2xl font-semibold tracking-tight text-ink mb-2">Welcome back.</h1>
+          <p class="text-xs text-body">Enter your email and password to access your dashboard.</p>
+        </div>
+
+        <!-- Error Alert Banner -->
+        <div id="error-alert" class="hidden flex items-start gap-2 text-error bg-error-soft/40 border border-error-soft p-3 rounded-md text-xs mb-6 w-full">
+          <svg class="h-4 w-4 shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+          <span id="error-message"></span>
+        </div>
+
+        <!-- Form -->
+        <form id="login-form" class="space-y-4">
+          <div class="flex flex-col gap-1.5 w-full">
+            <label class="text-[10px] font-mono uppercase tracking-wider text-body">Email Address</label>
+            <input
+              type="email"
+              id="email"
+              required
+              placeholder="you@example.com"
+              class="h-10 text-sm px-3 rounded-sm border border-hairline bg-canvas outline-none focus:border-hairline-strong font-sans w-full"
+            />
+          </div>
+
+          <div class="flex flex-col gap-1.5 w-full">
+            <div class="flex justify-between items-center">
+              <label class="text-[10px] font-mono uppercase tracking-wider text-body">Password</label>
+              <span class="text-[10px] text-mute hover:text-ink cursor-pointer">Forgot password?</span>
+            </div>
+            <input
+              type="password"
+              id="password"
+              required
+              placeholder="••••••••"
+              class="h-10 text-sm px-3 rounded-sm border border-hairline bg-canvas outline-none focus:border-hairline-strong font-sans w-full"
+            />
+          </div>
+
+          <Button type="submit" variant="primary" className="w-full mt-4 font-semibold text-xs h-10 select-none">
+            Log In
+          </Button>
+        </form>
+
+        <div class="mt-6 text-center border-t border-hairline pt-6">
+          <p class="text-xs text-body">
+            Don't have an account? 
+            <a href="/register" class="text-link hover:underline font-semibold ml-1">Sign up for free</a>
+          </p>
+        </div>
+      </Card>
+    </div>
+  </div>
+
+  <script>
+    const form = document.getElementById("login-form") as HTMLFormElement;
+    const errorAlert = document.getElementById("error-alert");
+    const errorMessage = document.getElementById("error-message");
+
+    form?.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      
+      const email = (document.getElementById("email") as HTMLInputElement).value;
+      const password = (document.getElementById("password") as HTMLInputElement).value;
+
+      errorAlert?.classList.add("hidden");
+
+      try {
+        const response = await fetch("/api/auth/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, password }),
+        });
+
+        let data;
+        try {
+          data = await response.json();
+        } catch (jsonErr) {
+          const errorText = await response.text();
+          errorMessage!.textContent = errorText || "Login failed. Invalid server response.";
+          errorAlert?.classList.remove("hidden");
+          return;
+        }
+
+        if (response.ok && data.success) {
+          // Check for redirect param
+          const params = new URLSearchParams(window.location.search);
+          const redirect = params.get("redirect") || "/dashboard";
+          window.location.href = redirect;
+        } else {
+          errorMessage!.textContent = data.error || "Login failed.";
+          errorAlert?.classList.remove("hidden");
+        }
+      } catch (err) {
+        errorMessage!.textContent = "A network error occurred. Please check your internet connection.";
+        errorAlert?.classList.remove("hidden");
+      }
+    });
+  </script>
+</Layout>

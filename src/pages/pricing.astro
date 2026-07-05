@@ -1,0 +1,293 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Card from "../components/ui/Card";
+import Button from "../components/ui/Button";
+---
+
+<Layout title="Pricing Plans - Real QR Code Generator" description="Scale your campaigns with affordable static and dynamic QR code plans. Get Core features at half the price of competitors.">
+  <div class="py-12 md:py-20 text-center max-w-3xl mx-auto">
+    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-link-bg-soft text-link text-xs font-mono font-medium mb-4">
+      PRICING STRATEGY
+    </div>
+    <h1 class="text-4xl md:text-5xl font-semibold tracking-tight text-ink mb-6">
+      Plans that scale with your scans.
+    </h1>
+    <p class="text-lg text-body mb-8">
+      Start creating high-resolution static codes for free, or upgrade to manage, edit, and track dynamic QR campaigns. Half the price of competitors, zero compromise on quality.
+    </p>
+
+    <!-- Monthly / Annual Toggle -->
+    <div class="inline-flex items-center gap-3 p-1 rounded-full border border-hairline bg-canvas shadow-sm">
+      <button id="toggle-monthly" class="px-4 py-1.5 text-xs font-semibold rounded-full bg-primary text-on-primary cursor-pointer transition-all">
+        Billed Monthly
+      </button>
+      <button id="toggle-annual" class="px-4 py-1.5 text-xs font-semibold rounded-full text-body hover:text-ink cursor-pointer transition-all">
+        Billed Annually <span class="text-link text-[10px] ml-1 font-mono">Save 30%</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Launch notice banner -->
+  <div class="max-w-3xl mx-auto px-4 mb-10">
+    <div class="bg-link-bg-soft/40 border border-link/20 rounded-lg p-4 text-center text-xs md:text-sm text-body">
+      ⚡ <strong>Launch Phase Notice:</strong> Paid subscription features and registration from this page are temporarily coming soon. Currently, all registered users are automatically placed on our extended free tier allowing <strong>unlimited static QRs</strong> and up to <strong>20 dynamic QRs</strong>.
+    </div>
+  </div>
+
+  <!-- Pricing Grid -->
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-8 items-stretch max-w-6xl mx-auto px-4">
+    <!-- Free Card -->
+    <Card level={2} rounded="lg" className="flex flex-col justify-between">
+      <div>
+        <h3 class="text-xl font-semibold text-ink mb-2">Free</h3>
+        <p class="text-sm text-body mb-6 min-h-[40px]">Perfect for individuals creating permanent offline QR codes.</p>
+        <div class="mb-6">
+          <span class="text-4xl font-semibold tracking-tight text-ink">$0</span>
+          <span class="text-mute text-sm">/month</span>
+        </div>
+        
+        <div class="h-px bg-hairline mb-6"></div>
+        
+        <ul class="space-y-4 mb-8 text-sm text-body">
+          <li class="flex items-center gap-2.5">
+            <svg class="h-4 w-4 text-success shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            <span>Unlimited static QR codes</span>
+          </li>
+          <li class="flex items-center gap-2.5">
+            <svg class="h-4 w-4 text-success shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            <span>20 dynamic QR codes</span>
+          </li>
+          <li class="flex items-center gap-2.5">
+            <svg class="h-4 w-4 text-success shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            <span>Standard scanning layouts</span>
+          </li>
+          <li class="flex items-center gap-2.5">
+            <svg class="h-4 w-4 text-success shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            <span>SVG & PNG image formats</span>
+          </li>
+        </ul>
+      </div>
+      <div class="w-full">
+        <Button variant="secondary" className="w-full cursor-not-allowed opacity-50" disabled>Coming Soon</Button>
+      </div>
+    </Card>
+
+    <!-- Core Card -->
+    <Card level={3} rounded="lg" className="flex flex-col justify-between border-hairline-strong relative">
+      <div class="absolute -top-3 left-1/2 -translate-x-1/2 bg-link text-white text-[10px] font-mono px-3 py-1 rounded-full uppercase tracking-wider">
+        Most Popular
+      </div>
+      <div>
+        <h3 class="text-xl font-semibold text-ink mb-2">Core</h3>
+        <p class="text-sm text-body mb-6 min-h-[40px]">Great for marketers and small businesses requiring basic analytics.</p>
+        <div class="mb-6">
+          <span class="text-4xl font-semibold tracking-tight text-ink" id="core-price">$3.49</span>
+          <span class="text-mute text-sm">/month</span>
+          <div class="text-[10px] text-link mt-1 font-mono hidden" id="core-billing-note">Billed annually ($29.88/yr)</div>
+        </div>
+        
+        <div class="h-px bg-hairline mb-6"></div>
+        
+        <ul class="space-y-4 mb-8 text-sm text-body">
+          <li class="flex items-center gap-2.5">
+            <svg class="h-4 w-4 text-success shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            <span class="font-medium text-ink">100 dynamic QR codes</span>
+          </li>
+          <li class="flex items-center gap-2.5">
+            <svg class="h-4 w-4 text-success shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            <span>Unlimited scans (no hard limits)</span>
+          </li>
+          <li class="flex items-center gap-2.5">
+            <svg class="h-4 w-4 text-success shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            <span>Scan analytics (Daily & Device info)</span>
+          </li>
+          <li class="flex items-center gap-2.5">
+            <svg class="h-4 w-4 text-success shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            <span>Bulk QR generation (Phase 2)</span>
+          </li>
+        </ul>
+      </div>
+      <div class="w-full">
+        <Button variant="primary" className="w-full cursor-not-allowed opacity-50" disabled>Coming Soon</Button>
+      </div>
+    </Card>
+
+    <!-- Plus Card (Polarity Flipped - Vercel Dark Style) -->
+    <div class="bg-neutral-950 text-white rounded-lg shadow-level-4 p-6 flex flex-col justify-between border border-neutral-800">
+      <div>
+        <div class="flex items-center justify-between mb-2">
+          <h3 class="text-xl font-semibold text-white">Plus</h3>
+          <span class="text-[10px] font-mono bg-cyan/15 text-cyan border border-cyan/35 px-2 py-0.5 rounded-full uppercase tracking-wider font-semibold">Coming Soon</span>
+        </div>
+        <p class="text-sm text-neutral-400 mb-6 min-h-[40px]">Advanced white-label settings and agency features.</p>
+        <div class="mb-6">
+          <span class="text-4xl font-semibold tracking-tight text-white" id="plus-price">$8.75</span>
+          <span class="text-neutral-400 text-sm">/month</span>
+          <div class="text-[10px] text-cyan mt-1 font-mono hidden" id="plus-billing-note">Billed annually ($75.00/yr)</div>
+        </div>
+        
+        <div class="h-px bg-neutral-800 mb-6"></div>
+        
+        <ul class="space-y-4 mb-8 text-sm text-neutral-300">
+          <li class="flex items-center gap-2.5">
+            <svg class="h-4 w-4 text-cyan shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            <span class="font-medium text-white">Unlimited dynamic QR codes</span>
+          </li>
+          <li class="flex items-center gap-2.5">
+            <svg class="h-4 w-4 text-cyan shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            <span>Team workspaces (up to 5 seats)</span>
+          </li>
+          <li class="flex items-center gap-2.5">
+            <svg class="h-4 w-4 text-cyan shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            <span>Custom domain redirects (Phase 2)</span>
+          </li>
+          <li class="flex items-center gap-2.5">
+            <svg class="h-4 w-4 text-cyan shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            <span>Priority 24/7 client support</span>
+          </li>
+        </ul>
+      </div>
+      <div class="w-full">
+        <button disabled class="bg-neutral-900 text-neutral-500 border border-neutral-800 font-medium text-sm h-10 px-4 rounded-sm w-full cursor-not-allowed opacity-75">
+          Coming Soon
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Enterprise Banner -->
+  <div class="max-w-6xl mx-auto px-4 mt-16">
+    <div class="border border-hairline bg-canvas rounded-lg p-8 flex flex-col md:flex-row items-center justify-between gap-6 shadow-level-2">
+      <div>
+        <div class="flex flex-wrap items-center gap-3 mb-2">
+          <h3 class="text-2xl font-semibold text-ink">Need something larger?</h3>
+          <span class="text-[10px] font-mono bg-link-bg-soft text-link border border-link/25 px-2 py-0.5 rounded-full uppercase tracking-wider font-semibold">COMING SOON</span>
+        </div>
+        <p class="text-sm text-body max-w-2xl">
+          Get custom service level agreements (SLAs), enterprise single sign-on (SSO), dedicated server resources, and unlimited scan capabilities.
+        </p>
+      </div>
+      <div>
+        <Button variant="secondary" className="whitespace-nowrap cursor-not-allowed opacity-50" disabled>
+          Contact Enterprise
+        </Button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Comparison Table -->
+  <div class="max-w-6xl mx-auto px-4 py-20">
+    <h2 class="text-2xl font-semibold tracking-tight text-ink mb-10 text-center">
+      Compare plan features.
+    </h2>
+    <div class="overflow-x-auto border border-hairline rounded-lg bg-canvas shadow-level-1">
+      <table class="w-full text-left border-collapse">
+        <thead>
+          <tr class="bg-canvas-soft border-b border-hairline font-mono text-[10px] text-mute uppercase tracking-widest">
+            <th class="p-4">Feature</th>
+            <th class="p-4">Free</th>
+            <th class="p-4">Core</th>
+            <th class="p-4">Plus</th>
+            <th class="p-4">Enterprise</th>
+          </tr>
+        </thead>
+        <tbody class="text-sm text-body division-y divide-hairline">
+          <tr class="border-b border-hairline">
+            <td class="p-4 font-medium text-ink">Static QR Codes</td>
+            <td class="p-4">Unlimited</td>
+            <td class="p-4">Unlimited</td>
+            <td class="p-4">Unlimited</td>
+            <td class="p-4">Unlimited</td>
+          </tr>
+          <tr class="border-b border-hairline">
+            <td class="p-4 font-medium text-ink">Dynamic QR Codes</td>
+            <td class="p-4">20</td>
+            <td class="p-4">100</td>
+            <td class="p-4">Unlimited</td>
+            <td class="p-4">Custom Limits</td>
+          </tr>
+          <tr class="border-b border-hairline">
+            <td class="p-4 font-medium text-ink">Scan Limit</td>
+            <td class="p-4">Unlimited</td>
+            <td class="p-4">Unlimited</td>
+            <td class="p-4">Unlimited</td>
+            <td class="p-4 font-normal">Dedicated Node</td>
+          </tr>
+          <tr class="border-b border-hairline">
+            <td class="p-4 font-medium text-ink">QR Style Presets</td>
+            <td class="p-4">Yes</td>
+            <td class="p-4">Yes</td>
+            <td class="p-4">Yes</td>
+            <td class="p-4">Yes</td>
+          </tr>
+          <tr class="border-b border-hairline">
+            <td class="p-4 font-medium text-ink">Logo Upload</td>
+            <td class="p-4">Yes</td>
+            <td class="p-4">Yes</td>
+            <td class="p-4">Yes</td>
+            <td class="p-4">Yes</td>
+          </tr>
+          <tr class="border-b border-hairline">
+            <td class="p-4 font-medium text-ink">Scan Analytics</td>
+            <td class="p-4">Basic</td>
+            <td class="p-4">Advanced</td>
+            <td class="p-4">Advanced</td>
+            <td class="p-4">Real-time Stream</td>
+          </tr>
+          <tr class="border-b border-hairline">
+            <td class="p-4 font-medium text-ink">API Key Access</td>
+            <td class="p-4">No</td>
+            <td class="p-4">Yes</td>
+            <td class="p-4">Yes</td>
+            <td class="p-4">Dedicated limits</td>
+          </tr>
+          <tr>
+            <td class="p-4 font-medium text-ink">Workspace Seats</td>
+            <td class="p-4">1 User</td>
+            <td class="p-4">1 User</td>
+            <td class="p-4">Up to 5 Users</td>
+            <td class="p-4">Unlimited</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <script>
+    // Client-side script to toggle pricing values
+    const btnMonthly = document.getElementById("toggle-monthly");
+    const btnAnnual = document.getElementById("toggle-annual");
+    const priceCore = document.getElementById("core-price");
+    const pricePlus = document.getElementById("plus-price");
+    const noteCore = document.getElementById("core-billing-note");
+    const notePlus = document.getElementById("plus-billing-note");
+
+    btnMonthly?.addEventListener("click", () => {
+      // Toggle button states
+      btnMonthly.className = "px-4 py-1.5 text-xs font-semibold rounded-full bg-primary text-on-primary cursor-pointer transition-all";
+      btnAnnual!.className = "px-4 py-1.5 text-xs font-semibold rounded-full text-body hover:text-ink cursor-pointer transition-all";
+      
+      // Update values
+      priceCore!.textContent = "$3.49";
+      pricePlus!.textContent = "$8.75";
+      
+      // Hide annual bills notes
+      noteCore!.classList.add("hidden");
+      notePlus!.classList.add("hidden");
+    });
+
+    btnAnnual?.addEventListener("click", () => {
+      // Toggle button states
+      btnMonthly!.className = "px-4 py-1.5 text-xs font-semibold rounded-full text-body hover:text-ink cursor-pointer transition-all";
+      btnAnnual.className = "px-4 py-1.5 text-xs font-semibold rounded-full bg-primary text-on-primary cursor-pointer transition-all";
+      
+      // Update values
+      priceCore!.textContent = "$2.49";
+      pricePlus!.textContent = "$6.25";
+      
+      // Show annual bills notes
+      noteCore!.classList.remove("hidden");
+      notePlus!.classList.remove("hidden");
+    });
+  </script>
+</Layout>

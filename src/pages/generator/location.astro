@@ -1,0 +1,25 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import { QRGeneratorShell } from "../../components/qr/QRGeneratorShell";
+
+const baseOrigin = import.meta.env.PUBLIC_QR_BASE_URL || Astro.url.origin;
+---
+
+<Layout title="Free Location QR Code Generator - Real QR Code Generator" description="Convert geographic latitude and longitude coordinates into customizable QR codes. Open Google Maps or Apple Maps instantly.">
+  <div class="py-12 text-center max-w-3xl mx-auto">
+    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-link-bg-soft text-link text-xs font-mono font-medium mb-4">
+      LOCATION GENERATOR
+    </div>
+    <h1 class="text-4xl md:text-5xl font-semibold tracking-tight text-ink mb-6">
+      Free Location QR Code Generator.
+    </h1>
+    <p class="text-base text-body">
+      Share coordinate routes instantly. Create custom style QR codes that auto-open latitude and longitude markers in Google Maps or Apple Maps upon scanning.
+    </p>
+  </div>
+
+  <!-- Interactive Customizer preloaded with Location -->
+  <div class="py-6 mb-20">
+    <QRGeneratorShell client:load defaultType="location" baseOrigin={baseOrigin} />
+  </div>
+</Layout>

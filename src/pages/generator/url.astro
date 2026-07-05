@@ -1,0 +1,25 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import { QRGeneratorShell } from "../../components/qr/QRGeneratorShell";
+
+const baseOrigin = import.meta.env.PUBLIC_QR_BASE_URL || Astro.url.origin;
+---
+
+<Layout title="Free URL QR Code Generator - Real QR Code Generator" description="Convert website links, landing pages, and redirect portals into custom, high-resolution vector QR codes. Fully customizable with colors and logos.">
+  <div class="py-12 text-center max-w-3xl mx-auto">
+    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-link-bg-soft text-link text-xs font-mono font-medium mb-4">
+      URL GENERATOR
+    </div>
+    <h1 class="text-4xl md:text-5xl font-semibold tracking-tight text-ink mb-6">
+      Free URL QR Code Generator.
+    </h1>
+    <p class="text-base text-body">
+      Quickly encode any web link or redirect page into a customizable QR code. Pick styles, solid or gradient colors, and download vector SVG for printing.
+    </p>
+  </div>
+
+  <!-- Interactive Customizer preloaded with URL -->
+  <div class="py-6 mb-20">
+    <QRGeneratorShell client:load defaultType="url" baseOrigin={baseOrigin} />
+  </div>
+</Layout>

@@ -1,0 +1,102 @@
+---
+import Layout from "../layouts/Layout.astro";
+import { QRGeneratorShell } from "../components/qr/QRGeneratorShell";
+import Card from "../components/ui/Card";
+import Button from "../components/ui/Button";
+
+// Check authentication status (handled by cookie sessions)
+const sessionCookie = Astro.cookies.get("session")?.value;
+const isLoggedIn = !!sessionCookie;
+---
+
+<Layout>
+  <!-- Hero Section -->
+  <div class="relative overflow-hidden pt-12 pb-16 md:pt-16 md:pb-24 text-center max-w-4xl mx-auto px-4">
+    <!-- Mesh Gradient Accent -->
+    <div class="absolute inset-0 -z-10 opacity-30 blur-3xl transform -translate-y-12 scale-90">
+      <div class="h-96 w-full bg-gradient-to-r from-gradient-develop-start via-gradient-preview-start to-gradient-ship-start rounded-full"></div>
+    </div>
+
+    <!-- Intro Pill -->
+    <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-canvas border border-hairline text-xs text-body shadow-sm mb-6 transition-all hover:border-hairline-strong">
+      <span class="font-mono text-link font-semibold">New</span>
+      <span class="h-1 w-1 rounded-full bg-mute"></span>
+      <span>Cloudflare Edge Powered Redirects</span>
+    </div>
+
+    <!-- Main Title (Sentence Case, Period Terminated, Neg tracking) -->
+    <h1 class="text-5xl md:text-6xl font-semibold tracking-tight text-ink mb-6 select-none leading-none">
+      Vector QR codes. <br class="hidden sm:inline" />Generated in milliseconds.
+    </h1>
+
+    <p class="text-base md:text-lg text-body max-w-2xl mx-auto mb-8 font-sans">
+      Create customizable, high-resolution static and dynamic QR codes. Edit redirect destinations, track scan statistics, and export vector SVG output with zero hosting costs.
+    </p>
+
+    <div class="flex items-center justify-center gap-4">
+      <a href="/register">
+        <Button variant="primary" size="lg">Start Building Free</Button>
+      </a>
+      <a href="/features">
+        <Button variant="secondary" size="lg">Explore Features</Button>
+      </a>
+    </div>
+  </div>
+
+  <!-- Interactive QR Generator Widget Shell (React mount) -->
+  <div class="w-full py-6 mb-24">
+    <QRGeneratorShell client:load isLoggedIn={isLoggedIn} />
+  </div>
+
+  <!-- Customer Logo Strip -->
+  <div class="border-y border-hairline bg-canvas/40 py-8 mb-24">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-center">
+      <p class="text-xs font-mono uppercase tracking-widest text-mute mb-6">TRUSTED BY DEVELOPERS WORLDWIDE</p>
+      <div class="flex flex-wrap items-center justify-center gap-x-12 gap-y-6 opacity-60">
+        <!-- NextJS style typography -->
+        <span class="font-sans text-lg font-bold text-ink tracking-tighter">Next.js</span>
+        <!-- Vercel logo style -->
+        <div class="flex items-center gap-1.5 font-bold tracking-tighter text-ink text-lg">
+          <polygon points="12,2 2,22 22,22" class="h-4 w-4 bg-ink" fill="currentColor" />
+          Vercel
+        </div>
+        <!-- Cloudflare style -->
+        <span class="font-sans text-lg font-bold text-ink tracking-tight">Cloudflare</span>
+        <!-- Stripe style -->
+        <span class="font-sans text-lg font-extrabold text-ink tracking-tighter">Stripe</span>
+        <!-- GitHub style -->
+        <span class="font-mono text-lg font-medium text-ink">GitHub</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Core Platform Grid -->
+  <div class="max-w-6xl mx-auto px-4 pb-20">
+    <div class="text-center max-w-2xl mx-auto mb-16">
+      <h2 class="text-3xl font-semibold tracking-tight text-ink mb-4">
+        Better than the competition.
+      </h2>
+      <p class="text-sm text-body">
+        Unlike other platforms that charge hefty fees, restrict resolutions, and inject intrusive ads, we keep static QR generation free and dynamic redirects fully scalable.
+      </p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+      <Card level={2} rounded="lg" className="p-8">
+        <h3 class="text-lg font-semibold text-ink mb-2">100% Free Static Generation</h3>
+        <p class="text-sm text-body mb-4">
+          Create infinite static QR codes for links, Wi-Fi keys, contact cards, emails, or messages. Downloads of PNGs and vector SVGs remain open forever. No account required.
+        </p>
+        <a href="/generator/url" class="text-xs font-semibold text-link hover:underline">Create Static QR →</a>
+      </Card>
+
+      <Card level={2} rounded="lg" className="p-8">
+        <h3 class="text-lg font-semibold text-ink mb-2">Edge-Fast Dynamic Redirects</h3>
+        <p class="text-sm text-body mb-4">
+          Edit the target URL of your dynamic QR codes at any time without changing the code styling. Scans are routed via Cloudflare Workers instantly with sub-millisecond delays.
+        </p>
+        <a href="/features" class="text-xs font-semibold text-link hover:underline">Learn about Redirects →</a>
+      </Card>
+    </div>
+  </div>
+</Layout>

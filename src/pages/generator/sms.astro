@@ -1,0 +1,25 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import { QRGeneratorShell } from "../../components/qr/QRGeneratorShell";
+
+const baseOrigin = import.meta.env.PUBLIC_QR_BASE_URL || Astro.url.origin;
+---
+
+<Layout title="Free SMS QR Code Generator - Real QR Code Generator" description="Generate custom QR codes that draft and send pre-composed text messages (SMS) to specific numbers. Free vector downloads.">
+  <div class="py-12 text-center max-w-3xl mx-auto">
+    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-link-bg-soft text-link text-xs font-mono font-medium mb-4">
+      SMS GENERATOR
+    </div>
+    <h1 class="text-4xl md:text-5xl font-semibold tracking-tight text-ink mb-6">
+      Free SMS QR Code Generator.
+    </h1>
+    <p class="text-base text-body">
+      Compose and send SMS text messages instantly. Create custom style QR codes that auto-draft messages and recipient telephone numbers upon scanning.
+    </p>
+  </div>
+
+  <!-- Interactive Customizer preloaded with SMS -->
+  <div class="py-6 mb-20">
+    <QRGeneratorShell client:load defaultType="sms" baseOrigin={baseOrigin} />
+  </div>
+</Layout>

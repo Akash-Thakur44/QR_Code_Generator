@@ -1,0 +1,25 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import { QRGeneratorShell } from "../../components/qr/QRGeneratorShell";
+
+const baseOrigin = import.meta.env.PUBLIC_QR_BASE_URL || Astro.url.origin;
+---
+
+<Layout title="Free WhatsApp QR Code Generator - Real QR Code Generator" description="Redirect users into pre-composed WhatsApp direct chat sessions. Enter phone and message, customize styles, and download instantly.">
+  <div class="py-12 text-center max-w-3xl mx-auto">
+    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-link-bg-soft text-link text-xs font-mono font-medium mb-4">
+      WHATSAPP GENERATOR
+    </div>
+    <h1 class="text-4xl md:text-5xl font-semibold tracking-tight text-ink mb-6">
+      Free WhatsApp QR Code Generator.
+    </h1>
+    <p class="text-base text-body">
+      Start direct chat lines instantly. Generate custom QR codes containing your country phone number and pre-filled texts, bypassing manual contact entry.
+    </p>
+  </div>
+
+  <!-- Interactive Customizer preloaded with WhatsApp -->
+  <div class="py-6 mb-20">
+    <QRGeneratorShell client:load defaultType="whatsapp" baseOrigin={baseOrigin} />
+  </div>
+</Layout>

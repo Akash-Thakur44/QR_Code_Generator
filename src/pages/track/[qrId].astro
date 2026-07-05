@@ -1,0 +1,83 @@
+---
+import { getDB } from "../../lib/db";
+import { parseUserAgent, hashIP } from "../../lib/utils";
+
+const { qrId } = Astro.params;
+
+if (!qrId) {
+  return Astro.redirect("/");
+}
+
+let targetUrl = "/";
+try {
+  const db = getDB(Astro);
+
+  // Retrieve dynamic QR code details
+  const qr = await db
+    .prepare("SELECT * FROM qr_codes WHERE id = ? AND status = 'active' AND type = 'dynamic'")
+    .bind(qrId)
+    .first<{ id: string; original_url: string }>();
+
+  if (!qr) {
+    return Astro.redirect("/404");
+  }
+
+  targetUrl = qr.original_url;
+
+  // Log scan details in background (D1 write)
+  const ip = Astro.request.headers.get("cf-connecting-ip") || Astro.request.headers.get("x-real-ip") || "127.0.0.1";
+  const hashedIp = await hashIP(ip);
+  const ua = Astro.request.headers.get("user-agent") || "";
+  const { device, os, browser } = parseUserAgent(ua);
+  
+  // Cloudflare headers
+  let country = Astro.request.headers.get("cf-ipcountry") || "Unknown";
+  
+  // Retrieve city from request context (Cloudflare CF bindings)
+  const cf = (Astro.request as any).cf || Astro.locals.runtime?.cf;
+  let city = cf?.city || "Unknown";
+
+  // Use actual Cloudflare geo data (works in production)
+  // For local development, fall back to "Local" instead of random mock data
+  const isLocalIp = ip === "127.0.0.1" || ip === "::1" || ip.startsWith("192.168.") || ip.startsWith("10.");
+  if (isLocalIp) {
+    country = "Local";
+    city = "Development";
+  }
+
+
+  
+  const referrer = Astro.request.headers.get("referer") || "";
+
+  // Extract UTM parameters
+  const requestUrl = new URL(Astro.request.url);
+  const utmSource = requestUrl.searchParams.get("utm_source") || "";
+  const utmMedium = requestUrl.searchParams.get("utm_medium") || "";
+  const utmCampaign = requestUrl.searchParams.get("utm_campaign") || "";
+
+  const scanId = crypto.randomUUID();
+  const now = new Date().toISOString();
+
+  // D1 Write operation
+  await db
+    .prepare(
+      `INSERT INTO scan_analytics (
+        id, qr_code_id, scanned_at, ip_hash, user_agent, 
+        referrer, country, city, device, browser, 
+        os, utm_source, utm_medium, utm_campaign
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+    )
+    .bind(
+      scanId, qr.id, now, hashedIp, ua, 
+      referrer, country, city, device, browser, 
+      os, utmSource, utmMedium, utmCampaign
+    )
+    .run();
+
+} catch (err) {
+  console.error("Tracking error:", err);
+}
+
+// Redirect client to destination
+return Astro.redirect(targetUrl, 302);
+---
