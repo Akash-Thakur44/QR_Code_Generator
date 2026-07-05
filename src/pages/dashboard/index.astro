@@ -4,6 +4,7 @@ import Card from "../../components/ui/Card";
 import Button from "../../components/ui/Button";
 import { getDB } from "../../lib/db";
 import { getSessionUser } from "../../lib/auth";
+import { generateQRSVG, defaultConfig } from "../../lib/qr-logic";
 
 const user = await getSessionUser(Astro);
 if (!user) {
@@ -82,95 +83,142 @@ const categoryIcons: Record<string, string> = {
           parsedConfig = JSON.parse(qr.qr_config);
         } catch(e) {}
 
+        const mergedConfig = { ...defaultConfig, ...parsedConfig };
         const isDynamic = qr.type === "dynamic";
-        const shortUrl = `realqrcodegenerator.com/r/${qr.short_code}`;
+
+         const baseOrigin = import.meta.env.PUBLIC_QR_BASE_URL || Astro.url.origin;
+
+        // Generate SVG string - dynamic QRs use tracking URL for analytics
+        const trackingUrl = isDynamic 
+          ? `${baseOrigin}/track/${qr.id}`
+          : "";
+        const qrCodeData = trackingUrl || qr.original_url || "Static Data";
+        const qrSvg = generateQRSVG(qrCodeData, mergedConfig);
 
         return (
-          <Card level={2} rounded="lg" className="flex flex-col justify-between hover:border-hairline-strong transition-all relative" id={`qr-card-${qr.id}`}>
-            <div>
-              <!-- Header Row -->
-              <div class="flex items-start justify-between gap-4 mb-4">
-                <div class="flex items-center gap-2">
-                  <span class="text-2xl select-none" title={qr.category}>
-                    {categoryIcons[qr.category] || "📦"}
-                  </span>
-                  <div>
-                    <h3 class="text-sm font-semibold text-ink capitalize">{qr.category} QR</h3>
-                    <span class="text-[10px] font-mono text-mute">
-                      Created {new Date(qr.created_at).toLocaleDateString()}
-                    </span>
+          <div id={`qr-card-${qr.id}`} class="h-full">
+            <Card level={2} rounded="lg" className="hover:border-hairline-strong transition-all relative h-full">
+              <div class="flex flex-col sm:flex-row gap-5">
+                <!-- Left: QR Code display and download actions -->
+                <div class="flex flex-col items-center gap-3 shrink-0 mx-auto sm:mx-0">
+                  <div class="w-28 h-28 aspect-square flex items-center justify-center p-2 bg-white rounded-md border border-hairline shadow-sm" set:html={qrSvg} />
+                  <div class="flex gap-1.5 w-full">
+                    <button 
+                      class="download-svg-btn flex-1 text-[10px] font-semibold py-1 rounded-sm bg-canvas border border-hairline hover:bg-canvas-soft text-body hover:text-ink transition-colors cursor-pointer text-center"
+                      data-card-id={`qr-card-${qr.id}`}
+                      data-qr-type={qr.type}
+                    >
+                      SVG
+                    </button>
+                    <button 
+                      class="download-png-btn flex-1 text-[10px] font-semibold py-1 rounded-sm bg-primary text-on-primary hover:bg-neutral-800 dark:hover:bg-neutral-200 transition-colors cursor-pointer text-center"
+                      data-card-id={`qr-card-${qr.id}`}
+                      data-qr-type={qr.type}
+                      data-bg-color={mergedConfig.backgroundColor || "#ffffff"}
+                    >
+                      PNG
+                    </button>
                   </div>
                 </div>
 
-                <div class="flex gap-1.5">
-                  <span class={`text-[9px] font-mono font-semibold px-2 py-0.5 rounded-full uppercase tracking-wider ${
-                    isDynamic 
-                      ? "bg-link-bg-soft text-link border border-link/10" 
-                      : "bg-canvas-soft-2 text-body border border-hairline"
-                  }`}>
-                    {qr.type}
-                  </span>
+                <!-- Right: Metadata and Actions -->
+                <div class="flex-1 flex flex-col justify-between min-w-0">
+                  <div>
+                    <!-- Header Row -->
+                    <div class="flex items-start justify-between gap-4 mb-3">
+                      <div class="flex items-center gap-2">
+                        <span class="text-2xl select-none" title={qr.category}>
+                          {categoryIcons[qr.category] || "📦"}
+                        </span>
+                        <div>
+                          <h3 class="text-sm font-semibold text-ink capitalize">{qr.category} QR</h3>
+                          <span class="text-[10px] font-mono text-mute">
+                            Created {new Date(qr.created_at).toLocaleDateString()}
+                          </span>
+                        </div>
+                      </div>
+
+                      <div class="flex gap-1.5">
+                        <span class={`text-[9px] font-mono font-semibold px-2 py-0.5 rounded-full uppercase tracking-wider ${
+                          isDynamic 
+                            ? "bg-link-bg-soft text-link border border-link/10" 
+                            : "bg-canvas-soft-2 text-body border border-hairline"
+                        }`}>
+                          {qr.type}
+                        </span>
+                      </div>
+                    </div>
+
+                    <!-- Info Body -->
+                    <div class="space-y-2 mb-4">
+                      {isDynamic ? (
+                        <div>
+                          <div class="text-[10px] font-mono uppercase tracking-wider text-mute">Tracking Link (Scan to Track)</div>
+                          <a href={`/track/${qr.id}`} target="_blank" class="text-xs font-semibold text-link hover:underline block truncate" title={`${baseOrigin}/track/${qr.id}`}>
+                            {baseOrigin.replace(/^https?:\/\//, "")}/track/{qr.id}
+                          </a>
+                          <div class="text-[10px] font-mono uppercase tracking-wider text-mute mt-2">Redirects To</div>
+                          <a href={qr.original_url} target="_blank" class="destination-url-text text-xs text-body truncate font-mono bg-canvas-soft-2 px-2 py-1 rounded-sm border border-hairline max-h-12 overflow-y-auto select-all" title={qr.original_url} data-qr-id={qr.id}>
+                            {qr.original_url}
+                          </a>
+                        </div>
+                      ) : (
+                        <div>
+                          <div class="text-[10px] font-mono uppercase tracking-wider text-mute">Static Payload</div>
+                          <div class="text-xs text-body truncate font-mono bg-canvas-soft-2 px-2 py-1 rounded-sm border border-hairline max-h-12 overflow-y-auto select-all">
+                            {qr.original_url || "Static Data"}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  <!-- Footer Actions -->
+                  <div class="border-t border-hairline pt-3 flex items-center justify-between gap-4">
+                    <!-- Scan stats summary -->
+                    <div>
+                      {isDynamic ? (
+                        <div class="flex items-center gap-1.5 text-xs text-ink font-semibold">
+                          <svg class="h-3.5 w-3.5 text-link" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+                          <span>{qr.scan_count} {qr.scan_count === 1 ? "scan" : "scans"}</span>
+                        </div>
+                      ) : (
+                        <span class="text-[10px] font-mono text-mute uppercase">No tracking</span>
+                      )}
+                    </div>
+
+                    <div class="flex items-center gap-2">
+                      {isDynamic && (
+                        <a href={`/dashboard/analytics?qrId=${qr.id}`}>
+                          <Button variant="secondary" size="sm" className="text-xs h-7 px-2">
+                            Analytics
+                          </Button>
+                        </a>
+                      )}
+                      {isDynamic && (
+                        <button
+                          data-qr-id={qr.id}
+                          data-original-url={qr.original_url}
+                          class="edit-qr-btn text-xs h-7 px-2.5 rounded-sm bg-canvas border border-hairline hover:bg-canvas-soft-2 text-body hover:text-ink transition-colors cursor-pointer font-sans"
+                        >
+                          Edit
+                        </button>
+                      )}
+                      
+                      {/* Delete Trigger */}
+                      <button
+                        data-qr-id={qr.id}
+                        class="delete-qr-btn p-1.5 rounded-sm border border-hairline hover:bg-error-soft hover:text-error hover:border-error-soft transition-colors cursor-pointer text-body"
+                        title="Delete QR"
+                      >
+                        <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
+                      </button>
+                    </div>
+                  </div>
                 </div>
               </div>
-
-              <!-- Info Body -->
-              <div class="space-y-2 mb-6">
-                {isDynamic ? (
-                  <div>
-                    <div class="text-[10px] font-mono uppercase tracking-wider text-mute">Shortened Link</div>
-                    <a href={`/r/${qr.short_code}`} target="_blank" class="text-xs font-semibold text-link hover:underline block truncate">
-                      {shortUrl}
-                    </a>
-                    <div class="text-[10px] font-mono uppercase tracking-wider text-mute mt-2">Destination</div>
-                    <div class="text-xs text-body truncate" title={qr.original_url}>
-                      {qr.original_url}
-                    </div>
-                  </div>
-                ) : (
-                  <div>
-                    <div class="text-[10px] font-mono uppercase tracking-wider text-mute">Static Payload</div>
-                    <div class="text-xs text-body truncate font-mono bg-canvas-soft-2 px-2 py-1 rounded-sm border border-hairline max-h-12 overflow-y-auto select-all">
-                      {qr.original_url || "Static Data"}
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
-
-            <!-- Footer Actions -->
-            <div class="border-t border-hairline pt-4 mt-2 flex items-center justify-between gap-4">
-              <!-- Scan stats summary -->
-              <div>
-                {isDynamic ? (
-                  <div class="flex items-center gap-1.5 text-xs text-ink font-semibold">
-                    <svg class="h-3.5 w-3.5 text-link" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
-                    <span>{qr.scan_count} {qr.scan_count === 1 ? "scan" : "scans"}</span>
-                  </div>
-                ) : (
-                  <span class="text-[10px] font-mono text-mute uppercase">No tracking</span>
-                )}
-              </div>
-
-              <div class="flex items-center gap-2">
-                {isDynamic && (
-                  <a href={`/dashboard/analytics?qrId=${qr.id}`}>
-                    <Button variant="secondary" size="sm" className="text-xs h-7 px-2">
-                      Analytics
-                    </Button>
-                  </a>
-                )}
-                
-                {/* Delete Trigger */}
-                <button
-                  data-qr-id={qr.id}
-                  class="delete-qr-btn p-1.5 rounded-sm border border-hairline hover:bg-error-soft hover:text-error hover:border-error-soft transition-colors cursor-pointer text-body"
-                  title="Delete QR"
-                >
-                  <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
-                </button>
-              </div>
-            </div>
-          </Card>
+            </Card>
+          </div>
         );
       })}
     </div>
@@ -211,5 +259,197 @@ const categoryIcons: Record<string, string> = {
         }
       });
     });
+
+    // Download SVG handler
+    document.querySelectorAll(".download-svg-btn").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const cardId = btn.getAttribute("data-card-id");
+        const svgEl = document.querySelector(`#${cardId} svg`);
+        if (!svgEl) return;
+        const svgString = new XMLSerializer().serializeToString(svgEl);
+        const blob = new Blob([svgString], { type: "image/svg+xml;charset=utf-8" });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = `realqr-${btn.getAttribute("data-qr-type") || "qr"}-${Date.now()}.svg`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+      });
+    });
+
+    // Download PNG handler
+    document.querySelectorAll(".download-png-btn").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const cardId = btn.getAttribute("data-card-id");
+        const svgEl = document.querySelector(`#${cardId} svg`);
+        if (!svgEl) return;
+        const svgString = new XMLSerializer().serializeToString(svgEl);
+        const svgBlob = new Blob([svgString], { type: "image/svg+xml;charset=utf-8" });
+        const blobURL = URL.createObjectURL(svgBlob);
+        
+        const bg = btn.getAttribute("data-bg-color") || "#ffffff";
+
+        const img = new Image();
+        img.onload = () => {
+          const canvas = document.createElement("canvas");
+          canvas.width = 1200;
+          canvas.height = 1200;
+          const ctx = canvas.getContext("2d");
+          if (ctx) {
+            if (bg === "transparent") {
+              ctx.clearRect(0, 0, 1200, 1200);
+            } else {
+              ctx.fillStyle = bg;
+              ctx.fillRect(0, 0, 1200, 1200);
+            }
+            ctx.drawImage(img, 0, 0, 1200, 1200);
+            const pngURL = canvas.toDataURL("image/png");
+            const link = document.createElement("a");
+            link.href = pngURL;
+            link.download = `realqr-${btn.getAttribute("data-qr-type") || "qr"}-${Date.now()}.png`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+          }
+          URL.revokeObjectURL(blobURL);
+        };
+        img.src = blobURL;
+      });
+    });
+
+    // Edit QR modal handlers
+    const editButtons = document.querySelectorAll(".edit-qr-btn");
+    const editModal = document.getElementById("edit-qr-modal") as HTMLDialogElement;
+    const editForm = document.getElementById("edit-qr-form") as HTMLFormElement;
+    const editQrIdInput = document.getElementById("edit-qr-id") as HTMLInputElement;
+    const editUrlInput = document.getElementById("edit-original-url") as HTMLInputElement;
+    const cancelEditBtn = document.getElementById("cancel-edit-btn");
+    const closeModalBtn = document.getElementById("close-modal-btn");
+
+    let activeEditBtn: HTMLElement | null = null;
+
+    editButtons.forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const qrId = btn.getAttribute("data-qr-id");
+        const currentUrl = btn.getAttribute("data-original-url");
+        if (!qrId) return;
+
+        activeEditBtn = btn as HTMLElement;
+        editQrIdInput.value = qrId;
+        editUrlInput.value = currentUrl || "";
+        editModal.showModal();
+      });
+    });
+
+    const closeModal = () => {
+      editModal.close();
+      editForm.reset();
+      activeEditBtn = null;
+    };
+
+    cancelEditBtn?.addEventListener("click", closeModal);
+    closeModalBtn?.addEventListener("click", closeModal);
+
+    // Close modal if user clicks outside of the dialog box
+    editModal?.addEventListener("click", (e) => {
+      const rect = editModal.getBoundingClientRect();
+      const isInDialog = (
+        rect.top <= e.clientY &&
+        e.clientY <= rect.top + rect.height &&
+        rect.left <= e.clientX &&
+        e.clientX <= rect.left + rect.width
+      );
+      if (!isInDialog) {
+        closeModal();
+      }
+    });
+
+    editForm?.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const qrId = editQrIdInput.value;
+      const originalUrl = editUrlInput.value.trim();
+      if (!qrId || !originalUrl) return;
+
+      const saveBtn = document.getElementById("save-edit-btn") as HTMLButtonElement;
+      const originalText = saveBtn.textContent;
+      saveBtn.disabled = true;
+      saveBtn.textContent = "Saving...";
+
+      try {
+        const response = await fetch("/api/qr/update", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ qrId, originalUrl }),
+        });
+
+        if (response.ok) {
+          // Update attribute on the Edit button
+          if (activeEditBtn) {
+            activeEditBtn.setAttribute("data-original-url", originalUrl);
+          }
+
+          // Update destination text in the card inline
+          const textEl = document.querySelector(`.destination-url-text[data-qr-id="${qrId}"]`);
+          if (textEl) {
+            textEl.textContent = originalUrl;
+            textEl.setAttribute("title", originalUrl);
+          }
+
+          closeModal();
+        } else {
+          const errData = await response.json().catch(() => ({}));
+          alert(errData.error || "Failed to update redirect target. Please try again.");
+        }
+      } catch (err) {
+        alert("A network error occurred. Please try again.");
+      } finally {
+        saveBtn.disabled = false;
+        saveBtn.textContent = originalText;
+      }
+    });
   </script>
+
+  <!-- Edit Destination Modal -->
+  <dialog id="edit-qr-modal" class="backdrop:bg-black/60 backdrop:backdrop-blur-sm p-0 rounded-lg border border-hairline bg-canvas shadow-level-4 max-w-md w-full overflow-hidden outline-none m-auto">
+    <div class="p-6">
+      <div class="flex items-center justify-between border-b border-hairline pb-4 mb-4">
+        <h3 class="text-sm font-semibold text-ink">Edit Redirect Target</h3>
+        <button id="close-modal-btn" class="text-body hover:text-ink cursor-pointer outline-none">
+          <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
+      </div>
+      <form id="edit-qr-form" class="space-y-4">
+        <input type="hidden" id="edit-qr-id" name="qrId" />
+        <div class="flex flex-col gap-1.5">
+          <label class="text-xs font-mono uppercase tracking-wider text-body">Destination URL</label>
+          <input
+            type="url"
+            id="edit-original-url"
+            name="originalUrl"
+            required
+            placeholder="https://example.com"
+            class="h-10 text-sm px-3 rounded-sm border border-hairline bg-canvas text-ink outline-none focus:border-hairline-strong font-sans w-full"
+          />
+        </div>
+        <div class="flex justify-end gap-3 pt-2">
+          <button
+            type="button"
+            id="cancel-edit-btn"
+            class="px-4 py-2 text-xs font-semibold rounded-sm border border-hairline bg-canvas text-body hover:text-ink cursor-pointer transition-colors"
+          >
+            Cancel
+          </button>
+          <button
+            type="submit"
+            id="save-edit-btn"
+            class="px-4 py-2 text-xs font-semibold rounded-sm bg-primary text-on-primary hover:bg-neutral-800 transition-colors cursor-pointer"
+          >
+            Save Changes
+          </button>
+        </div>
+      </form>
+    </div>
+  </dialog>
 </DashboardLayout>

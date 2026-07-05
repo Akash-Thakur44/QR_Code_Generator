@@ -123,7 +123,7 @@ export async function createSession(context: APIContext | AstroGlobal, userId: s
   context.cookies.set("session", sessionToken, {
     path: "/",
     httpOnly: true,
-    secure: true,
+    secure: context.url.protocol === "https:",
     sameSite: "lax",
     maxAge: maxAge,
   });

@@ -2,9 +2,9 @@
 import { getDB } from "../../lib/db";
 import { parseUserAgent, hashIP } from "../../lib/utils";
 
-const { code } = Astro.params;
+const { qrId } = Astro.params;
 
-if (!code) {
+if (!qrId) {
   return Astro.redirect("/");
 }
 
@@ -14,12 +14,11 @@ try {
 
   // Retrieve dynamic QR code details
   const qr = await db
-    .prepare("SELECT * FROM qr_codes WHERE short_code = ? AND status = 'active'")
-    .bind(code)
-    .first<{ id: string; original_url: string; is_password_protected: number; password_hash: string }>();
+    .prepare("SELECT * FROM qr_codes WHERE id = ? AND status = 'active' AND type = 'dynamic'")
+    .bind(qrId)
+    .first<{ id: string; original_url: string }>();
 
   if (!qr) {
-    // If QR code doesn't exist, redirect to home page or custom 404
     return Astro.redirect("/404");
   }
 
@@ -32,11 +31,21 @@ try {
   const { device, os, browser } = parseUserAgent(ua);
   
   // Cloudflare headers
-  const country = Astro.request.headers.get("cf-ipcountry") || "Unknown";
+  let country = Astro.request.headers.get("cf-ipcountry") || "Unknown";
   
   // Retrieve city from request context (Cloudflare CF bindings)
-  const cf = (Astro.request as any).cf;
-  const city = cf?.city || "Unknown";
+  const cf = (Astro.request as any).cf || Astro.locals.runtime?.cf;
+  let city = cf?.city || "Unknown";
+
+  // Use actual Cloudflare geo data (works in production)
+  // For local development, fall back to "Local" instead of random mock data
+  const isLocalIp = ip === "127.0.0.1" || ip === "::1" || ip.startsWith("192.168.") || ip.startsWith("10.");
+  if (isLocalIp) {
+    country = "Local";
+    city = "Development";
+  }
+
+
   
   const referrer = Astro.request.headers.get("referer") || "";
 
@@ -66,7 +75,7 @@ try {
     .run();
 
 } catch (err) {
-  console.error("Redirection tracking error:", err);
+  console.error("Tracking error:", err);
 }
 
 // Redirect client to destination

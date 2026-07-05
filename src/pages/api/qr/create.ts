@@ -2,6 +2,13 @@ import type { APIRoute } from "astro";
 import { getDB } from "../../../lib/db";
 import { getSessionUser } from "../../../lib/auth";
 
+interface CreateQRRequest {
+  type: string;
+  category: string;
+  originalUrl?: string;
+  qrConfig: Record<string, unknown>;
+}
+
 export const POST: APIRoute = async (context) => {
   try {
     const user = await getSessionUser(context);
@@ -9,7 +16,8 @@ export const POST: APIRoute = async (context) => {
       return new Response(JSON.stringify({ error: "Unauthorized. Please log in first." }), { status: 401 });
     }
 
-    const { type, category, originalUrl, qrConfig } = await context.request.json();
+    const body = await context.request.json<CreateQRRequest>();
+    const { type, category, originalUrl, qrConfig } = body;
 
     if (!type || !category || !qrConfig) {
       return new Response(JSON.stringify({ error: "Missing required parameters (type, category, qrConfig)." }), { status: 400 });
@@ -27,49 +35,46 @@ export const POST: APIRoute = async (context) => {
       return new Response(JSON.stringify({ error: "User workspace organization not found." }), { status: 404 });
     }
 
-    const qrId = crypto.randomUUID();
-    const now = new Date().toISOString();
-    let shortCode: string | null = null;
-
+    // Enforce 20 dynamic QR limit
     if (type === "dynamic") {
+      const countResult = await db
+        .prepare("SELECT COUNT(*) as count FROM qr_codes WHERE user_id = ? AND type = 'dynamic'")
+        .bind(user.id)
+        .first<{ count: number }>();
+      
+      const dynamicCount = countResult?.count || 0;
+      if (dynamicCount >= 20) {
+        return new Response(
+          JSON.stringify({ error: "Limit reached. You can generate up to 20 dynamic QR codes under the VIP Free Pass." }),
+          { status: 403, headers: { "Content-Type": "application/json" } }
+        );
+      }
+      
       if (!originalUrl) {
         return new Response(JSON.stringify({ error: "Dynamic QR codes require an original URL destination." }), { status: 400 });
       }
-      
-      // Generate a unique 5-character alphanumeric short code
-      let isUnique = false;
-      let attempts = 0;
-      while (!isUnique && attempts < 10) {
-        const potentialCode = Math.random().toString(36).substring(2, 7);
-        const existing = await db.prepare("SELECT id FROM qr_codes WHERE short_code = ?").bind(potentialCode).first();
-        if (!existing) {
-          shortCode = potentialCode;
-          isUnique = true;
-        }
-        attempts++;
-      }
-      if (!shortCode) {
-        return new Response(JSON.stringify({ error: "Failed to generate a unique short code." }), { status: 500 });
-      }
     }
 
-    // Insert record
+    const qrId = crypto.randomUUID();
+    const now = new Date().toISOString();
+
+    // Insert record - no short_code needed, QR directly contains the target URL
     await db
       .prepare(
         `INSERT INTO qr_codes (
           id, user_id, organization_id, type, category, 
-          short_code, original_url, qr_config, status, 
+          original_url, qr_config, status, 
           created_at, updated_at
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'active', ?, ?)`
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, 'active', ?, ?)`
       )
       .bind(
         qrId, user.id, org.id, type, category, 
-        shortCode, originalUrl || null, JSON.stringify(qrConfig), 
+        originalUrl || null, JSON.stringify(qrConfig), 
         now, now
       )
       .run();
 
-    return new Response(JSON.stringify({ success: true, qrId, shortCode }), {
+    return new Response(JSON.stringify({ success: true, qrId }), {
       status: 200,
       headers: { "Content-Type": "application/json" },
     });

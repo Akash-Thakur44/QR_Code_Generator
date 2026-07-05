@@ -52,7 +52,6 @@ CREATE TABLE qr_codes (
     folder_id TEXT,
     type TEXT NOT NULL, -- 'static' | 'dynamic'
     category TEXT NOT NULL, -- 'url', 'wifi', 'vcard', 'whatsapp', 'sms', etc.
-    short_code TEXT UNIQUE,
     original_url TEXT,
     qr_config TEXT NOT NULL, -- JSON String (colors, eye/body styles, frame settings, logo url)
     qr_image_url TEXT,

@@ -1,7 +1,8 @@
 ---
 import Layout from "../../layouts/Layout.astro";
 import { QRGeneratorShell } from "../../components/qr/QRGeneratorShell";
-import Card from "../../components/ui/Card";
+
+const baseOrigin = import.meta.env.PUBLIC_QR_BASE_URL || Astro.url.origin;
 ---
 
 <Layout title="Free SMS QR Code Generator - Real QR Code Generator" description="Generate custom QR codes that draft and send pre-composed text messages (SMS) to specific numbers. Free vector downloads.">
@@ -19,33 +20,6 @@ import Card from "../../components/ui/Card";
 
   <!-- Interactive Customizer preloaded with SMS -->
   <div class="py-6 mb-20">
-    <QRGeneratorShell client:load defaultType="sms" />
-  </div>
-
-  <!-- SEO structured copy block -->
-  <div class="max-w-4xl mx-auto px-4 space-y-12 pb-16">
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-      <div>
-        <h2 class="text-xl font-semibold text-ink mb-4">What is an SMS QR Code?</h2>
-        <p class="text-sm text-body leading-relaxed">
-          An SMS QR code encodes a text message string structured as: <code>SMSTO:PhoneNumber:MessageText</code>. When scanned by a mobile device, the native messaging application opens with the recipient's phone number filled out and the message pre-typed in the draft input box.
-        </p>
-      </div>
-      <div>
-        <h2 class="text-xl font-semibold text-ink mb-4">Do SMS QR codes require internet?</h2>
-        <p class="text-sm text-body leading-relaxed">
-          No! SMS QR codes are fully static and work offline. The information is read directly by the camera and parsed locally on the device, drafting a normal carrier-network SMS without needing active web connectivity.
-        </p>
-      </div>
-    </div>
-
-    <Card level={2} rounded="lg" className="bg-canvas p-8">
-      <h3 class="text-lg font-semibold text-ink mb-3">Key SMS Design Tips</h3>
-      <ul class="text-sm text-body space-y-3 list-disc list-inside leading-relaxed">
-        <li><strong>Verify Carrier Compatibility:</strong> Always input the full recipient number including country code (e.g. <code>+15551234567</code>) so that devices can route the text message correctly.</li>
-        <li><strong>Character lengths:</strong> Keep messages concise. Standard SMS structures draft up to 160 characters easily, but longer texts increase code complexity.</li>
-        <li><strong>Mobile Usability:</strong> Excellent for marketing campaigns, feedback collections, and joining automated SMS mailing lists with one scan.</li>
-      </ul>
-    </Card>
+    <QRGeneratorShell client:load defaultType="sms" baseOrigin={baseOrigin} />
   </div>
 </Layout>

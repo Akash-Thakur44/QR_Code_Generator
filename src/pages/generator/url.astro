@@ -1,7 +1,8 @@
 ---
 import Layout from "../../layouts/Layout.astro";
 import { QRGeneratorShell } from "../../components/qr/QRGeneratorShell";
-import Card from "../../components/ui/Card";
+
+const baseOrigin = import.meta.env.PUBLIC_QR_BASE_URL || Astro.url.origin;
 ---
 
 <Layout title="Free URL QR Code Generator - Real QR Code Generator" description="Convert website links, landing pages, and redirect portals into custom, high-resolution vector QR codes. Fully customizable with colors and logos.">
@@ -19,37 +20,6 @@ import Card from "../../components/ui/Card";
 
   <!-- Interactive Customizer preloaded with URL -->
   <div class="py-6 mb-20">
-    <QRGeneratorShell client:load defaultType="url" />
-  </div>
-
-  <!-- SEO structured copy block -->
-  <div class="max-w-4xl mx-auto px-4 space-y-12 pb-16">
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-      <div>
-        <h2 class="text-xl font-semibold text-ink mb-4">What is a URL QR Code?</h2>
-        <p class="text-sm text-body leading-relaxed">
-          A URL QR code is a two-dimensional barcode containing a web address. When scanned by a mobile device camera or lens, the browser automatically opens the linked site, eliminating the need to type complex strings.
-        </p>
-      </div>
-      <div>
-        <h2 class="text-xl font-semibold text-ink mb-4">How to create a URL QR code?</h2>
-        <ol class="text-sm text-body space-y-2 list-decimal list-inside leading-relaxed">
-          <li>Enter your target website link (e.g. <code>https://example.com</code>).</li>
-          <li>Customize the design: choose shapes, eye corners, and colors.</li>
-          <li>Upload your custom branding logo in the center panel.</li>
-          <li>Scan the live preview with your mobile camera to test.</li>
-          <li>Download the final file as SVG or high-resolution PNG.</li>
-        </ol>
-      </div>
-    </div>
-
-    <Card level={2} rounded="lg" className="bg-canvas p-8">
-      <h3 class="text-lg font-semibold text-ink mb-3">Best practices for link QR codes</h3>
-      <ul class="text-sm text-body space-y-3 list-disc list-inside leading-relaxed">
-        <li><strong>Ensure High Contrast:</strong> The foreground shape must be significantly darker than the background canvas (a dark theme on a white canvas is best).</li>
-        <li><strong>Test scan spacing:</strong> Keep a clean "quiet zone" border around the barcode so scanners recognize the patterns easily.</li>
-        <li><strong>Consider Dynamic Codes:</strong> If you are printing codes on paper or packaging, choose Dynamic mode so you can change the target destination later without reprinting.</li>
-      </ul>
-    </Card>
+    <QRGeneratorShell client:load defaultType="url" baseOrigin={baseOrigin} />
   </div>
 </Layout>

@@ -19,16 +19,19 @@ import {
   Globe
 } from "lucide-react";
 
+import { QRFacts, type QRType } from "./QRFacts";
+
 interface QRGeneratorShellProps {
   isLoggedIn?: boolean;
   defaultType?: QRType;
+  baseOrigin?: string;
 }
 
-type QRType = "url" | "wifi" | "vcard" | "whatsapp" | "email" | "sms" | "phone" | "location" | "text";
 
 export const QRGeneratorShell: React.FC<QRGeneratorShellProps> = ({ 
   isLoggedIn = false, 
-  defaultType = "url" 
+  defaultType = "url",
+  baseOrigin = "https://realqrcodegenerator.com"
 }) => {
   // Config state
   const [config, setConfig] = useState<QRConfig>(defaultConfig);
@@ -133,7 +136,7 @@ export const QRGeneratorShell: React.FC<QRGeneratorShellProps> = ({
         body: JSON.stringify({
           type: "dynamic",
           category: qrType,
-          originalUrl: url.trim(),
+          originalUrl: payload,
           qrConfig: config,
         }),
       });
@@ -141,7 +144,8 @@ export const QRGeneratorShell: React.FC<QRGeneratorShellProps> = ({
       if (response.ok) {
         window.location.href = "/dashboard";
       } else {
-        alert("Error saving dynamic QR code. Please try again.");
+        const errorData = await response.json().catch(() => ({})) as { error?: string };
+        alert(errorData.error || "Error saving dynamic QR code. Please try again.");
       }
     } catch (err) {
       console.error(err);
@@ -453,9 +457,20 @@ export const QRGeneratorShell: React.FC<QRGeneratorShellProps> = ({
         <QRDesignPanel config={config} onChange={setConfig} />
       </div>
 
-      {/* Right Column: Live preview & download triggers */}
+       {/* Right Column: Live preview & download triggers */}
       <div className="lg:col-span-3">
-        <QRPreviewPanel data={payload} config={config} isDynamic={isDynamic} />
+        <QRPreviewPanel 
+          data={payload} 
+          config={config} 
+          isDynamic={isDynamic} 
+          originalUrl={isDynamic ? payload : undefined}
+          baseOrigin={baseOrigin}
+        />
+      </div>
+
+      {/* Dynamic SEO structured copy block */}
+      <div className="lg:col-span-12 max-w-4xl mx-auto w-full border-t border-hairline pt-16 mt-8">
+        <QRFacts qrType={qrType} />
       </div>
 
     </div>

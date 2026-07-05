@@ -27,6 +27,13 @@ import Button from "../components/ui/Button";
     </div>
   </div>
 
+  <!-- Launch notice banner -->
+  <div class="max-w-3xl mx-auto px-4 mb-10">
+    <div class="bg-link-bg-soft/40 border border-link/20 rounded-lg p-4 text-center text-xs md:text-sm text-body">
+      ⚡ <strong>Launch Phase Notice:</strong> Paid subscription features and registration from this page are temporarily coming soon. Currently, all registered users are automatically placed on our extended free tier allowing <strong>unlimited static QRs</strong> and up to <strong>20 dynamic QRs</strong>.
+    </div>
+  </div>
+
   <!-- Pricing Grid -->
   <div class="grid grid-cols-1 md:grid-cols-3 gap-8 items-stretch max-w-6xl mx-auto px-4">
     <!-- Free Card -->
@@ -60,9 +67,9 @@ import Button from "../components/ui/Button";
           </li>
         </ul>
       </div>
-      <a href="/register" class="w-full">
-        <Button variant="secondary" className="w-full">Get Started</Button>
-      </a>
+      <div class="w-full">
+        <Button variant="secondary" className="w-full cursor-not-allowed opacity-50" disabled>Coming Soon</Button>
+      </div>
     </Card>
 
     <!-- Core Card -->
@@ -100,9 +107,9 @@ import Button from "../components/ui/Button";
           </li>
         </ul>
       </div>
-      <a href="/register" class="w-full">
-        <Button variant="primary" className="w-full">Upgrade to Core</Button>
-      </a>
+      <div class="w-full">
+        <Button variant="primary" className="w-full cursor-not-allowed opacity-50" disabled>Coming Soon</Button>
+      </div>
     </Card>
 
     <!-- Plus Card (Polarity Flipped - Vercel Dark Style) -->
@@ -204,7 +211,7 @@ import Button from "../components/ui/Button";
             <td class="p-4">Unlimited</td>
             <td class="p-4">Unlimited</td>
             <td class="p-4">Unlimited</td>
-            <td class="p-4">Dedicated Node</td>
+            <td class="p-4 font-normal">Dedicated Node</td>
           </tr>
           <tr class="border-b border-hairline">
             <td class="p-4 font-medium text-ink">QR Style Presets</td>

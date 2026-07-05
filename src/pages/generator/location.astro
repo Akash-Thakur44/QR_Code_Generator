@@ -1,7 +1,8 @@
 ---
 import Layout from "../../layouts/Layout.astro";
 import { QRGeneratorShell } from "../../components/qr/QRGeneratorShell";
-import Card from "../../components/ui/Card";
+
+const baseOrigin = import.meta.env.PUBLIC_QR_BASE_URL || Astro.url.origin;
 ---
 
 <Layout title="Free Location QR Code Generator - Real QR Code Generator" description="Convert geographic latitude and longitude coordinates into customizable QR codes. Open Google Maps or Apple Maps instantly.">
@@ -19,33 +20,6 @@ import Card from "../../components/ui/Card";
 
   <!-- Interactive Customizer preloaded with Location -->
   <div class="py-6 mb-20">
-    <QRGeneratorShell client:load defaultType="location" />
-  </div>
-
-  <!-- SEO structured copy block -->
-  <div class="max-w-4xl mx-auto px-4 space-y-12 pb-16">
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-      <div>
-        <h2 class="text-xl font-semibold text-ink mb-4">What is a Location QR Code?</h2>
-        <p class="text-sm text-body leading-relaxed">
-          A Location QR code encodes latitude and longitude decimal values structured in a standardized format: <code>geo:latitude,longitude</code>. When scanned, the smartphone prompts to launch your default navigation app (Google Maps, Apple Maps, or Waze) pre-centered on the coordinates.
-        </p>
-      </div>
-      <div>
-        <h2 class="text-xl font-semibold text-ink mb-4">Why use map location codes?</h2>
-        <p class="text-sm text-body leading-relaxed">
-          Perfect for printing on wedding invitations, event banners, flyers, and real-estate listings. Scanners get direct driving direction pathways, bypassing the need to type complex street addresses.
-        </p>
-      </div>
-    </div>
-
-    <Card level={2} rounded="lg" className="bg-canvas p-8">
-      <h3 class="text-lg font-semibold text-ink mb-3">Key Location Formatting Tips</h3>
-      <ul class="text-sm text-body space-y-3 list-disc list-inside leading-relaxed">
-        <li><strong>Decimal coordinate format:</strong> Double check your coordinate inputs (e.g. Latitude <code>40.7128</code> and Longitude <code>-74.0060</code> for New York City). Avoid using degrees-minutes-seconds.</li>
-        <li><strong>Offline Capability:</strong> Geo codes are fully static and work offline, opening mapping software locally using cached GPS signals if cellular connection is weak.</li>
-        <li><strong>Branding:</strong> Add our custom map pin icon from the Logo panel to make the QR target clear.</li>
-      </ul>
-    </Card>
+    <QRGeneratorShell client:load defaultType="location" baseOrigin={baseOrigin} />
   </div>
 </Layout>

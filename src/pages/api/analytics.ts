@@ -20,7 +20,7 @@ export const GET: APIRoute = async (context) => {
 
     // Verify ownership
     const qr = await db
-      .prepare("SELECT id, type, category, short_code, original_url FROM qr_codes WHERE id = ? AND user_id = ?")
+      .prepare("SELECT id, type, category, original_url FROM qr_codes WHERE id = ? AND user_id = ?")
       .bind(qrId, user.id)
       .first();
 
@@ -64,18 +64,18 @@ export const GET: APIRoute = async (context) => {
       .bind(qrId)
       .all<{ device: string; count: number }>();
 
-    // 4. Fetch Country Breakdown
+    // 4. Fetch Country & City Breakdown
     const countryBreakdown = await db
       .prepare(
-        `SELECT country, COUNT(*) as count 
+        `SELECT country, city, COUNT(*) as count 
          FROM scan_analytics 
          WHERE qr_code_id = ? 
-         GROUP BY country 
+         GROUP BY country, city 
          ORDER BY count DESC 
          LIMIT 10`
       )
       .bind(qrId)
-      .all<{ country: string; count: number }>();
+      .all<{ country: string; city: string; count: number }>();
 
     // 5. Fetch Browser Breakdown
     const browserBreakdown = await db

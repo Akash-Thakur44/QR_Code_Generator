@@ -1,7 +1,8 @@
 ---
 import Layout from "../../layouts/Layout.astro";
 import { QRGeneratorShell } from "../../components/qr/QRGeneratorShell";
-import Card from "../../components/ui/Card";
+
+const baseOrigin = import.meta.env.PUBLIC_QR_BASE_URL || Astro.url.origin;
 ---
 
 <Layout title="Free vCard QR Code Generator - Real QR Code Generator" description="Convert business contact details (name, phone, email, company, URL) into scannable vCard QR codes. Import contacts directly to smartphones.">
@@ -19,33 +20,6 @@ import Card from "../../components/ui/Card";
 
   <!-- Interactive Customizer preloaded with vCard -->
   <div class="py-6 mb-20">
-    <QRGeneratorShell client:load defaultType="vcard" />
-  </div>
-
-  <!-- SEO structured copy block -->
-  <div class="max-w-4xl mx-auto px-4 space-y-12 pb-16">
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-      <div>
-        <h2 class="text-xl font-semibold text-ink mb-4">What is a vCard QR Code?</h2>
-        <p class="text-sm text-body leading-relaxed">
-          A vCard QR code stores contact information formatted according to the Virtual Card (vCard) file specification (version 3.0). When scanned by modern smartphones, the camera app displays an option to "Add to Contacts," importing first/last names, telephone numbers, emails, job roles, company lines, and site links instantly.
-        </p>
-      </div>
-      <div>
-        <h2 class="text-xl font-semibold text-ink mb-4">Why use contact QR codes?</h2>
-        <p class="text-sm text-body leading-relaxed">
-          Traditional paper business cards get lost or thrown away in seconds. Placing a vCard QR code on the back of your business cards, flyers, email footers, or presentation slides lets peers save your records directly in their address books.
-        </p>
-      </div>
-    </div>
-
-    <Card level={2} rounded="lg" className="bg-canvas p-8">
-      <h3 class="text-lg font-semibold text-ink mb-3">vCard Styling & Formatting Advice</h3>
-      <ul class="text-sm text-body space-y-3 list-disc list-inside leading-relaxed">
-        <li><strong>Character Limits:</strong> vCards contain substantial text payload which increases the barcode density (making the squares smaller). Keep details concise to ensure quick scanning on older devices.</li>
-        <li><strong>Clean SVG Downloads:</strong> Download as a clean vector SVG to ensure the small square modules remain razor sharp when printed on paper cards or banners.</li>
-        <li><strong>Add a Logo:</strong> Place your personal portrait or company brand logo in the quiet center zone to establish immediate trust.</li>
-      </ul>
-    </Card>
+    <QRGeneratorShell client:load defaultType="vcard" baseOrigin={baseOrigin} />
   </div>
 </Layout>

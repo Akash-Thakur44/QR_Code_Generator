@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { type QRConfig } from "../../lib/qr-logic";
 import { Palette, Layers, Eye, Image as ImageIcon } from "lucide-react";
+import { CustomColorPicker } from "./CustomColorPicker";
 
 interface QRDesignPanelProps {
   config: QRConfig;
@@ -19,10 +20,10 @@ export const QRDesignPanel: React.FC<QRDesignPanelProps> = ({ config, onChange }
 
   const sampleLogos = [
     { name: "None", value: undefined },
-    { name: "Link", value: "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%230070f3' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'><path d='M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71'></path><path d='M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71'></path></svg>" },
-    { name: "WiFi", value: "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23171717' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'><path d='M5 12.55a11 11 0 0 1 14.08 0'></path><path d='M1.42 9a16 16 0 0 1 21.16 0'></path><path d='M8.53 16.11a6 6 0 0 1 6.95 0'></path><line x1='12' y1='20' x2='12.01' y2='20'></line></svg>" },
-    { name: "WhatsApp", value: "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%2325D366' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z'></path></svg>" },
-    { name: "Email", value: "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23ee0000' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'><path d='M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z'></path><polyline points='22,6 12,13 2,6'></polyline></svg>" },
+    { name: "Link", value: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHdpZHRoPScyNCcgaGVpZ2h0PScyNCcgdmlld0JveD0nMCAwIDI0IDI0JyBmaWxsPSdub25lJyBzdHJva2U9JyMwMDcwZjMnIHN0cm9rZS13aWR0aD0nMycgc3Ryb2tlLWxpbmVjYXA9J3JvdW5kJyBzdHJva2UtbGluZWpvaW49J3JvdW5kJz48cGF0aCBkPSdNMTAgMTNhNSA1IDAgMCAwIDcuNTQuNTRsMy0zYTUgNSAwIDAgMC03LjA3LTcuMDdsLTEuNzIgMS43MSc+PC9wYXRoPjxwYXRoIGQ9J00xNCAxMWE1IDUgMCAwIDAtNy41NC0uNTRsLTMgM2E1IDUgMCAwIDAgNy4wNyA3LjA3bDEuNzEtMS43MSc+PC9wYXRoPjwvc3ZnPg==" },
+    { name: "WiFi", value: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHdpZHRoPScyNCcgaGVpZ2h0PScyNCcgdmlld0JveD0nMCAwIDI0IDI0JyBmaWxsPSdub25lJyBzdHJva2U9JyMxNzE3MTcnIHN0cm9rZS13aWR0aD0nMycgc3Ryb2tlLWxpbmVjYXA9J3JvdW5kJyBzdHJva2UtbGluZWpvaW49J3JvdW5kJz48cGF0aCBkPSdNNSAxMi41NWExMSAxMSAwIDAgMSAxNC4wOCAwJz48L3BhdGg+PHBhdGggZD0nTTEuNDIgOWExNiAxNiAwIDAgMSAyMS4xNiAwJz48L3BhdGg+PHBhdGggZD0nTTguNTMgMTYuMTFhNiA2IDAgMCAxIDYuOTUgMCc+PC9wYXRoPjxsaW5lIHgxPScxMicgeTE9JzIwJyB4Mj0nMTIuMDEnIHkyPScyMCc+PC9saW5lPjwvc3ZnPg==" },
+    { name: "WhatsApp", value: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHdpZHRoPScyNCcgaGVpZ2h0PScyNCcgdmlld0JveD0nMCAwIDI0IDI0JyBmaWxsPSdub25lJyBzdHJva2U9JyMyNUQzNjYnIHN0cm9rZS13aWR0aD0nMicgc3Ryb2tlLWxpbmVjYXA9J3JvdW5kJyBzdHJva2UtbGluZWpvaW49J3JvdW5kJz48cGF0aCBkPSdNMjEgMTEuNWE4LjM4IDguMzggMCAwIDEtLjkgMy44IDguNSA4LjUgMCAwIDEtNy42IDQuNyA4LjM4IDguMzggMCAwIDEtMy44LS45TDMgMjFsMS45LTUuN2E4LjM4IDguMzggMCAwIDEtLjktMy44IDguNSA4LjUgMCAwIDEgNC43LTcuNiA4LjM4IDguMzggMCAwIDEgMy44LS45aC41YTguNDggOC40OCAwIDAgMSA4IDh2LjV6Jz48L3BhdGg+PC9zdmc+" },
+    { name: "Email", value: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHdpZHRoPScyNCcgaGVpZ2h0PScyNCcgdmlld0JveD0nMCAwIDI0IDI0JyBmaWxsPSdub25lJyBzdHJva2U9JyNlZTAwMDAnIHN0cm9rZS13aWR0aD0nMi41JyBzdHJva2UtbGluZWNhcD0ncm91bmQnIHN0cm9rZS1saW5lam9pbj0ncm91bmQnPjxwYXRoIGQ9J000IDRoMTZjMS4xIDAgMiAuOSAyIDJ2MTJjMCAxLjEtLjkgMi0yIDJINGMtMS4xIDAtMi0uOS0yLTJWNmMwLTEuMS45LTIgMi0yeic+PC9wYXRoPjxwb2x5bGluZSBwb2ludHM9JzIyLDYgMTIsMTMgMiw2Jz48L3BvbHlsaW5lPjwvc3ZnPg==" },
   ];
 
   const handleCustomLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -86,18 +87,26 @@ export const QRDesignPanel: React.FC<QRDesignPanelProps> = ({ config, onChange }
             <div className="space-y-2">
               <label className="text-xs font-mono uppercase tracking-wider text-mute">Background Color</label>
               <div className="flex items-center gap-3">
-                <input
-                  type="color"
-                  value={config.backgroundColor === "transparent" ? "#ffffff" : config.backgroundColor}
-                  onChange={(e) => updateConfig("backgroundColor", e.target.value)}
-                  className="h-9 w-9 rounded-sm border border-hairline cursor-pointer p-0"
-                />
+                {config.backgroundColor !== "transparent" ? (
+                  <div className="flex-1">
+                    <CustomColorPicker
+                      color={config.backgroundColor}
+                      onChange={(color) => updateConfig("backgroundColor", color)}
+                      label="Background Color"
+                    />
+                  </div>
+                ) : (
+                  <div className="h-10 px-3 rounded-sm border border-hairline bg-canvas-soft text-mute flex items-center text-xs font-mono select-none flex-1">
+                    Transparent Enabled
+                  </div>
+                )}
                 <button
+                  type="button"
                   onClick={() => updateConfig("backgroundColor", config.backgroundColor === "transparent" ? "#ffffff" : "transparent")}
-                  className={`text-xs px-3 py-1.5 rounded-sm border cursor-pointer ${config.backgroundColor === "transparent" ? "bg-primary text-on-primary border-primary" : "bg-canvas text-body border-hairline hover:text-ink"
+                  className={`text-xs px-3.5 py-2.5 rounded-sm border cursor-pointer font-semibold transition-all shrink-0 ${config.backgroundColor === "transparent" ? "bg-primary text-on-primary border-primary" : "bg-canvas text-body border-hairline hover:text-ink"
                     }`}
                 >
-                  Transparent
+                  {config.backgroundColor === "transparent" ? "Use Solid Color" : "Set Transparent"}
                 </button>
               </div>
             </div>
@@ -124,11 +133,10 @@ export const QRDesignPanel: React.FC<QRDesignPanelProps> = ({ config, onChange }
               <label className="text-xs font-mono uppercase tracking-wider text-mute">
                 {config.gradientType === "none" ? "QR Color" : "Gradient Start Color"}
               </label>
-              <input
-                type="color"
-                value={config.foregroundColor}
-                onChange={(e) => updateConfig("foregroundColor", e.target.value)}
-                className="h-10 w-full rounded-sm border border-hairline cursor-pointer p-0"
+              <CustomColorPicker
+                color={config.foregroundColor}
+                onChange={(color) => updateConfig("foregroundColor", color)}
+                label={config.gradientType === "none" ? "QR Color" : "Gradient Start Color"}
               />
             </div>
 
@@ -137,11 +145,10 @@ export const QRDesignPanel: React.FC<QRDesignPanelProps> = ({ config, onChange }
               <>
                 <div className="space-y-2">
                   <label className="text-xs font-mono uppercase tracking-wider text-mute">Gradient End Color</label>
-                  <input
-                    type="color"
-                    value={config.gradientColor2}
-                    onChange={(e) => updateConfig("gradientColor2", e.target.value)}
-                    className="h-10 w-full rounded-sm border border-hairline cursor-pointer p-0"
+                  <CustomColorPicker
+                    color={config.gradientColor2}
+                    onChange={(color) => updateConfig("gradientColor2", color)}
+                    label="Gradient End Color"
                   />
                 </div>
 

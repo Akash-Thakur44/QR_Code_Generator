@@ -1,7 +1,8 @@
 ---
 import Layout from "../../layouts/Layout.astro";
 import { QRGeneratorShell } from "../../components/qr/QRGeneratorShell";
-import Card from "../../components/ui/Card";
+
+const baseOrigin = import.meta.env.PUBLIC_QR_BASE_URL || Astro.url.origin;
 ---
 
 <Layout title="Free WhatsApp QR Code Generator - Real QR Code Generator" description="Redirect users into pre-composed WhatsApp direct chat sessions. Enter phone and message, customize styles, and download instantly.">
@@ -19,33 +20,6 @@ import Card from "../../components/ui/Card";
 
   <!-- Interactive Customizer preloaded with WhatsApp -->
   <div class="py-6 mb-20">
-    <QRGeneratorShell client:load defaultType="whatsapp" />
-  </div>
-
-  <!-- SEO structured copy block -->
-  <div class="max-w-4xl mx-auto px-4 space-y-12 pb-16">
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-      <div>
-        <h2 class="text-xl font-semibold text-ink mb-4">How does a WhatsApp QR Code work?</h2>
-        <p class="text-sm text-body leading-relaxed">
-          WhatsApp QR codes utilize the official WhatsApp click-to-chat API. The QR code encodes a URL like <code>https://wa.me/phone?text=message</code>. When scanned, the WhatsApp application opens automatically on the user's phone, initiating a chat directly with the specified recipient and filling the input text box.
-        </p>
-      </div>
-      <div>
-        <h2 class="text-xl font-semibold text-ink mb-4">Why use WhatsApp QR codes?</h2>
-        <p class="text-sm text-body leading-relaxed">
-          Ideal for customer support lines, local restaurants receiving orders, event registrations, and direct lead generation campaigns. It allows clients to message you with one tap, removing all friction from communication.
-        </p>
-      </div>
-    </div>
-
-    <Card level={2} rounded="lg" className="bg-canvas p-8">
-      <h3 class="text-lg font-semibold text-ink mb-3">Formatting WhatsApp Numbers</h3>
-      <ul class="text-sm text-body space-y-3 list-disc list-inside leading-relaxed">
-        <li><strong>Include Country Codes:</strong> Enter your full phone number including your country code (e.g. <code>15551234567</code> for US, do not include leading zeroes, plus symbols, or hyphens).</li>
-        <li><strong>Pre-fill useful prompts:</strong> Set helpful templates for your users (e.g., "Hello, I am interested in booking a table," or "I need assistance with my order").</li>
-        <li><strong>Branding:</strong> Add the official WhatsApp logo preset from our Logo panel to let scanner users know where the QR code points.</li>
-      </ul>
-    </Card>
+    <QRGeneratorShell client:load defaultType="whatsapp" baseOrigin={baseOrigin} />
   </div>
 </Layout>

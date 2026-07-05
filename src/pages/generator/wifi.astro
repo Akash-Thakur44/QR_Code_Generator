@@ -1,7 +1,8 @@
 ---
 import Layout from "../../layouts/Layout.astro";
 import { QRGeneratorShell } from "../../components/qr/QRGeneratorShell";
-import Card from "../../components/ui/Card";
+
+const baseOrigin = import.meta.env.PUBLIC_QR_BASE_URL || Astro.url.origin;
 ---
 
 <Layout title="Free WiFi QR Code Generator - Real QR Code Generator" description="Share local wireless networks with guests securely. Scan to connect to home or office Wi-Fi without typing passwords. Free vector downloads.">
@@ -19,33 +20,6 @@ import Card from "../../components/ui/Card";
 
   <!-- Interactive Customizer preloaded with WiFi -->
   <div class="py-6 mb-20">
-    <QRGeneratorShell client:load defaultType="wifi" />
-  </div>
-
-  <!-- SEO structured copy block -->
-  <div class="max-w-4xl mx-auto px-4 space-y-12 pb-16">
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-      <div>
-        <h2 class="text-xl font-semibold text-ink mb-4">How does a WiFi QR code work?</h2>
-        <p class="text-sm text-body leading-relaxed">
-          WiFi QR codes encode your network name (SSID), security type (such as WPA or WEP), and password in a standardized text structure: <code>WIFI:S:NetworkName;T:WPA;P:SecretPassword;;</code>. When an iPhone or Android camera scans this matrix, it interprets the security configuration and prompts the user to join the network.
-        </p>
-      </div>
-      <div>
-        <h2 class="text-xl font-semibold text-ink mb-4">Is it safe to share my Wi-Fi via QR?</h2>
-        <p class="text-sm text-body leading-relaxed">
-          Yes! The QR code does not broadcast your credentials over the internet; it simply stores the text locally in the visual pattern. Only users who physically scan the printed card or screen can read the barcode data to connect.
-        </p>
-      </div>
-    </div>
-
-    <Card level={2} rounded="lg" className="bg-canvas p-8">
-      <h3 class="text-lg font-semibold text-ink mb-3">SSID & Password Tips</h3>
-      <ul class="text-sm text-body space-y-3 list-disc list-inside leading-relaxed">
-        <li><strong>Exact spelling matches:</strong> Ensure your network SSID name exactly matches case-sensitivity (e.g. <code>MyWiFi</code> vs <code>mywifi</code>) or the scan connection will fail.</li>
-        <li><strong>Hidden Networks:</strong> If your router broadcasts a hidden SSID, some mobile devices may require you to select "Hidden Network" manual options, although standard setups join automatically.</li>
-        <li><strong>Print & Frame:</strong> Download as a clean SVG, print, and place inside your guest rooms or office lounge for a premium user experience.</li>
-      </ul>
-    </Card>
+    <QRGeneratorShell client:load defaultType="wifi" baseOrigin={baseOrigin} />
   </div>
 </Layout>

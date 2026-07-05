@@ -7,20 +7,26 @@ import { Button } from "../ui/Button";
 interface QRPreviewPanelProps {
   data: string;
   config: QRConfig;
-  shortCode?: string;
   isDynamic?: boolean;
+  originalUrl?: string;
+  qrId?: string;
+  baseOrigin?: string;
 }
 
 export const QRPreviewPanel: React.FC<QRPreviewPanelProps> = ({
   data,
   config,
-  shortCode,
   isDynamic = false,
+  originalUrl,
+  qrId,
+  baseOrigin = "https://realqrcodegenerator.com",
 }) => {
   const previewRef = useRef<HTMLDivElement>(null);
 
-  // Generate SVG string
-  const svgContent = generateQRSVG(data || "https://realqrcodegenerator.com", config);
+  // Generate SVG string - for dynamic QRs, use tracking URL
+  const trackingUrl = isDynamic && qrId ? `${baseOrigin}/track/${qrId}` : "";
+  const qrData = trackingUrl || (isDynamic && originalUrl ? originalUrl : (data || "https://realqrcodegenerator.com"));
+  const svgContent = generateQRSVG(qrData, config);
 
   // Download SVG
   const downloadSVG = () => {
@@ -83,7 +89,15 @@ export const QRPreviewPanel: React.FC<QRPreviewPanelProps> = ({
         {/* Live SVG container */}
         <div
           ref={previewRef}
-          className="w-full max-w-[200px] h-full aspect-square flex items-center justify-center mb-6 shadow-sm border border-hairline p-2 bg-white rounded-md"
+          className="w-[200px] h-[200px] shrink-0 flex items-center justify-center mb-6 shadow-sm border border-hairline p-2 rounded-md"
+          style={{
+            backgroundColor: config.backgroundColor === "transparent" ? undefined : config.backgroundColor,
+            backgroundImage: config.backgroundColor === "transparent"
+              ? "linear-gradient(45deg, #f0f0f0 25%, transparent 25%, transparent 75%, #f0f0f0 75%), linear-gradient(45deg, #f0f0f0 25%, #ffffff 25%, #ffffff 75%, #f0f0f0 75%)"
+              : undefined,
+            backgroundSize: config.backgroundColor === "transparent" ? "16px 16px" : undefined,
+            backgroundPosition: config.backgroundColor === "transparent" ? "0 0, 8px 8px" : undefined,
+          }}
           dangerouslySetInnerHTML={{ __html: svgContent }}
         />
 
@@ -96,25 +110,37 @@ export const QRPreviewPanel: React.FC<QRPreviewPanelProps> = ({
           </div>
         )}
 
-        {isDynamic && shortCode && (
+        {isDynamic && trackingUrl && (
           <div className="text-center w-full bg-canvas-soft border border-hairline py-2 px-3 rounded-sm text-xs mb-6 select-all">
-            <span className="font-mono text-mute">Shortened redirection link:</span>
-            <div className="font-semibold text-link mt-0.5">
-              realqrcodegenerator.com/r/{shortCode}
+            <span className="font-mono text-mute">Tracking link (encoded in QR):</span>
+            <div className="font-semibold text-link mt-0.5 truncate" title={trackingUrl}>
+              {trackingUrl}
             </div>
+            {originalUrl && (
+              <div className="font-mono text-mute text-[10px] mt-1 truncate" title={originalUrl}>
+                Redirects to: {originalUrl}
+              </div>
+            )}
           </div>
         )}
 
-        <div className="grid grid-cols-2 gap-4 w-full">
-          <Button variant="secondary" size="md" onClick={downloadSVG} className="flex gap-2 text-xs">
-            <Download className="h-3.5 w-3.5" />
-            SVG Vector
-          </Button>
-          <Button variant="primary" size="md" onClick={downloadPNG} className="flex gap-2 text-xs">
-            <Download className="h-3.5 w-3.5" />
-            PNG Image
-          </Button>
-        </div>
+        {isDynamic && !originalUrl ? (
+          <div className="text-center w-full bg-link-bg-soft/40 border border-link/20 p-4 rounded-md text-xs mb-4">
+            <p className="font-semibold text-link mb-1">Dynamic QR Mode</p>
+            <p className="text-body text-[11px] leading-relaxed">Enter a destination URL and save to create a trackable, editable QR code.</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-2 gap-4 w-full">
+            <Button variant="secondary" size="md" onClick={downloadSVG} className="flex gap-2 text-xs">
+              <Download className="h-3.5 w-3.5" />
+              SVG Vector
+            </Button>
+            <Button variant="primary" size="md" onClick={downloadPNG} className="flex gap-2 text-xs">
+              <Download className="h-3.5 w-3.5" />
+              PNG Image
+            </Button>
+          </div>
+        )}
       </Card>
 
       <div className="flex items-center gap-2 p-3 bg-canvas-soft border border-hairline rounded-lg text-xs text-body">

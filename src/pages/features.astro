@@ -117,13 +117,13 @@ import Button from "../components/ui/Button";
           <span class="h-2 w-2 rounded-full bg-red-500"></span>
           <span class="h-2 w-2 rounded-full bg-yellow-500"></span>
           <span class="h-2 w-2 rounded-full bg-green-500"></span>
-          <span class="ml-2 text-[10px] text-neutral-500">cloudflare-worker.js</span>
+          <span class="ml-2 text-[10px] text-neutral-500">qr-logic.js</span>
         </div>
         <div class="space-y-1">
-          <p><span class="text-violet">const</span> shortCode = <span class="text-cyan">"r8x2k"</span>;</p>
-          <p><span class="text-violet">const</span> redirectUrl = <span class="text-violet">await</span> KV.get(shortCode);</p>
-          <p><span class="text-neutral-500">// Sub-millisecond routing</span></p>
-          <p><span class="text-violet">return</span> Response.redirect(redirectUrl, <span class="text-cyan">302</span>);</p>
+          <p><span class="text-neutral-500">// QR directly encodes</span></p>
+          <p><span class="text-neutral-500">// the target URL</span></p>
+          <p><span class="text-violet">const</span> qrData = <span class="text-cyan">"https://target-site.com/page"</span>;</p>
+          <p><span class="text-violet">const</span> svg = <span class="text-violet">generateQR</span>(qrData, config);</p>
         </div>
       </div>
     </div>
