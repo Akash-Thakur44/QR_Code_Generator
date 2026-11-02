@@ -43,7 +43,7 @@ Create a **Web Service** from this repository with:
 - Start command: `npm run start`
 - Environment variable: `DATABASE_URL`
 
-Use the Supabase **Session pooler** connection string for the long-running Node server and retain its SSL requirement. Optionally set `PUBLIC_QR_BASE_URL` to the public site origin. The Node standalone adapter is used by default; set `ASTRO_DEPLOY_TARGET=node` explicitly if desired.
+The start script binds to `0.0.0.0` and uses Render's assigned `PORT`. Use the Supabase **Session pooler** connection string for the long-running Node server and retain its SSL requirement. Optionally set `PUBLIC_QR_BASE_URL` to the public site origin. The Node standalone adapter is used by default; set `ASTRO_DEPLOY_TARGET=node` explicitly if desired.
 
 ## Useful commands
 
