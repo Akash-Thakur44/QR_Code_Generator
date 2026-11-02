@@ -1,6 +1,7 @@
 import type { APIRoute } from "astro";
 import { getDB } from "../../../lib/db";
 import { getSessionUser } from "../../../lib/auth";
+import { isRecord } from "../../../lib/utils";
 
 export const POST: APIRoute = async (context) => {
   try {
@@ -9,11 +10,11 @@ export const POST: APIRoute = async (context) => {
       return new Response(JSON.stringify({ error: "Unauthorized. Please log in first." }), { status: 401 });
     }
 
-    const { qrId } = await context.request.json();
-
-    if (!qrId) {
+    const body: unknown = await context.request.json();
+    if (!isRecord(body) || typeof body.qrId !== "string" || !body.qrId) {
       return new Response(JSON.stringify({ error: "Missing required parameter: qrId." }), { status: 400 });
     }
+    const { qrId } = body;
 
     const db = getDB(context);
 

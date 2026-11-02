@@ -1,8 +1,0 @@
-name = "real-qr-generator"
-compatibility_date = "2026-06-10"
-pages_build_output_dir = ".astro"
-
-[[d1_databases]]
-binding = "DB"
-database_name = "real-qr-db"
-database_id = "d1-placeholder-id"

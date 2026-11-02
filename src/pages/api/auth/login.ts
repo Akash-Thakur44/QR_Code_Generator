@@ -1,10 +1,16 @@
 import type { APIRoute } from "astro";
 import { getDB } from "../../../lib/db";
 import { verifyPassword, createSession } from "../../../lib/auth";
+import { isRecord } from "../../../lib/utils";
 
 export const POST: APIRoute = async (context) => {
   try {
-    const { email, password } = await context.request.json();
+    const body: unknown = await context.request.json();
+    if (!isRecord(body)) {
+      return new Response(JSON.stringify({ error: "Email and password are required fields." }), { status: 400 });
+    }
+
+    const { email, password } = body;
 
     // Validation
     if (!email || !password || typeof email !== "string" || typeof password !== "string") {

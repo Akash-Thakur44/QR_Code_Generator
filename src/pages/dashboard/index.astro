@@ -399,8 +399,15 @@ const categoryIcons: Record<string, string> = {
 
           closeModal();
         } else {
-          const errData = await response.json().catch(() => ({}));
-          alert(errData.error || "Failed to update redirect target. Please try again.");
+          const errData: unknown = await response.json().catch(() => ({}));
+          const error =
+            typeof errData === "object" &&
+            errData !== null &&
+            "error" in errData &&
+            typeof errData.error === "string"
+              ? errData.error
+              : "Failed to update redirect target. Please try again.";
+          alert(error);
         }
       } catch (err) {
         alert("A network error occurred. Please try again.");

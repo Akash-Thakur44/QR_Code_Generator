@@ -104,7 +104,7 @@ if (user) {
           body: JSON.stringify({ email, password }),
         });
 
-        let data;
+        let data: unknown;
         try {
           data = await response.json();
         } catch (jsonErr) {
@@ -114,13 +114,24 @@ if (user) {
           return;
         }
 
-        if (response.ok && data.success) {
+        const responseData =
+          typeof data === "object" && data !== null ? data : {};
+
+        if (
+          response.ok &&
+          "success" in responseData &&
+          responseData.success === true
+        ) {
           // Check for redirect param
           const params = new URLSearchParams(window.location.search);
           const redirect = params.get("redirect") || "/dashboard";
           window.location.href = redirect;
         } else {
-          errorMessage!.textContent = data.error || "Registration failed.";
+          const error =
+            "error" in responseData && typeof responseData.error === "string"
+              ? responseData.error
+              : "Registration failed.";
+          errorMessage!.textContent = error;
           errorAlert?.classList.remove("hidden");
         }
       } catch (err) {

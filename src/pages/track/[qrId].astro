@@ -24,18 +24,19 @@ try {
 
   targetUrl = qr.original_url;
 
-  // Log scan details in background (D1 write)
   const ip = Astro.request.headers.get("cf-connecting-ip") || Astro.request.headers.get("x-real-ip") || "127.0.0.1";
   const hashedIp = await hashIP(ip);
   const ua = Astro.request.headers.get("user-agent") || "";
   const { device, os, browser } = parseUserAgent(ua);
   
-  // Cloudflare headers
-  let country = Astro.request.headers.get("cf-ipcountry") || "Unknown";
-  
-  // Retrieve city from request context (Cloudflare CF bindings)
-  const cf = (Astro.request as any).cf || Astro.locals.runtime?.cf;
-  let city = cf?.city || "Unknown";
+  let country =
+    Astro.request.headers.get("cf-ipcountry") ||
+    Astro.request.headers.get("x-vercel-ip-country") ||
+    "Unknown";
+  let city =
+    Astro.request.headers.get("cf-ipcity") ||
+    Astro.request.headers.get("x-vercel-ip-city") ||
+    "Unknown";
 
   // Use actual Cloudflare geo data (works in production)
   // For local development, fall back to "Local" instead of random mock data
@@ -58,7 +59,6 @@ try {
   const scanId = crypto.randomUUID();
   const now = new Date().toISOString();
 
-  // D1 Write operation
   await db
     .prepare(
       `INSERT INTO scan_analytics (

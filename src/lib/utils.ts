@@ -1,3 +1,7 @@
+export function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
 // Simple regex User-Agent parser (optimized for edge running, 0 dependencies)
 export function parseUserAgent(uaString: string | null) {
   const ua = uaString || "";

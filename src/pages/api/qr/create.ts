@@ -1,13 +1,7 @@
 import type { APIRoute } from "astro";
 import { getDB } from "../../../lib/db";
 import { getSessionUser } from "../../../lib/auth";
-
-interface CreateQRRequest {
-  type: string;
-  category: string;
-  originalUrl?: string;
-  qrConfig: Record<string, unknown>;
-}
+import { isRecord } from "../../../lib/utils";
 
 export const POST: APIRoute = async (context) => {
   try {
@@ -16,12 +10,21 @@ export const POST: APIRoute = async (context) => {
       return new Response(JSON.stringify({ error: "Unauthorized. Please log in first." }), { status: 401 });
     }
 
-    const body = await context.request.json<CreateQRRequest>();
-    const { type, category, originalUrl, qrConfig } = body;
-
-    if (!type || !category || !qrConfig) {
-      return new Response(JSON.stringify({ error: "Missing required parameters (type, category, qrConfig)." }), { status: 400 });
+    const body: unknown = await context.request.json();
+    if (
+      !isRecord(body) ||
+      typeof body.type !== "string" ||
+      !body.type ||
+      typeof body.category !== "string" ||
+      !body.category ||
+      !isRecord(body.qrConfig) ||
+      (body.originalUrl !== undefined &&
+        typeof body.originalUrl !== "string")
+    ) {
+      return new Response(JSON.stringify({ error: "Missing or invalid required parameters (type, category, qrConfig)." }), { status: 400 });
     }
+
+    const { type, category, originalUrl, qrConfig } = body;
 
     const db = getDB(context);
 
